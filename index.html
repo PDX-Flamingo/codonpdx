@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -12,68 +12,137 @@
   
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/smoothness/jquery-ui.css" />
   
-  <script>
+  <script type="text/javascript">
     $(document).ready(function() {
       $( "#tabs" ).tabs();
 	  
 	  $("#comparison").change(function() {
 	    if($("#comparison").val() == "Custom List") {
 		  $("#customList").show()
+                  validateFormsNotEmpty()
 		}
 		else {
 		  $("#customList").hide()
+                  validateFormsNotEmpty()
 		}
 	  })
+
+      $("#customList").find("#add").click(addToCustomList)
+      validateFormsNotEmpty()
+      bindValidate()
     });
+
+    function removeFromCustomList() {
+      $(this).parent().parent().remove()
+      bindValidate()
+      validateFormsNotEmpty()
+    }
+
+    function addToCustomList() {
+      newRow = '<tr><td>Species:<input type="text" id="speciesInput"/>\
+              Input Type:\
+              <select>\
+                <option value="Organism Name">Organism Name</option>\
+                <option value="Taxonomy Id">Taxonomy Id</option>\
+              </select>\
+              <button type="button" id="add">Add New Row</button>\
+              <button type="button" id="remove" style="display:none">Remove</button></td></tr>'
+      $(this).hide()
+      $(this).parent().find("#remove").show()
+      $(this).parent().find("#remove").click(removeFromCustomList)
+      $('#customList').find('tbody').append(newRow)
+      $("#customList tr:last").find("#add").click(addToCustomList)
+      bindValidate()
+      validateFormsNotEmpty()
+    }
+
+    function bindValidate() {
+      $("#remove").click(validateFormsNotEmpty)
+      $("#add").click(validateFormsNotEmpty)
+      $("#sequenceText").bind("change keyup input paste", validateFormsNotEmpty)
+      $("#sequenceFile").bind("change keyup input paste", validateFormsNotEmpty)
+      $("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
+      rows = $("#customList").find("tbody").children().children()
+      $.each(rows, function(index, value) {
+        $(value).find("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
+      })
+      $("#comparison").bind("change keyup input paste", validateFormsNotEmpty)
+      $("ul").bind("click change keyup input paste",validateFormsNotEmpty)
+    }
+
+    function validateFormsNotEmpty() {
+      valid = true
+      tabs = $("#tabs").find("div")
+      if(tabs[0].className.indexOf("ui-tabs-hide") == -1) {
+        valid = valid && ($("#sequenceFile").val() != "")
+      } 
+      else {
+        valid = valid && ($("#sequenceText").val() != "")
+      }
+
+      if($("#customList").is(":visible")) {
+        rows = $("#customList").find("tbody").children().children() 
+        $.each(rows, function(index, value) {
+          valid = valid && ($(value).find("#speciesInput").val() != "")
+        })
+      }
+       
+      if(valid)
+        $("#submitRequest").removeAttr("disabled")
+      else
+        $("#submitRequest").attr('disabled', 'disabled')
+    }
   </script>
 </head>
 
 <body>
-<h2>Codon Analysis</h2>
+  <h2>Codon Analysis</h2>
  
-<div id="tabs">
-  <ul>
-    <li><a href="#tabs-1">Upload a File</a></li>
-    <li><a href="#tabs-2">Input Sequence</a></li>
-  </ul>
-  <div id="tabs-1">
-    Codon Sequence: <input type="file" name="sequenceFile"><br>
-	File Format: 
-	<select>
-      <option value="FASTA">FASTA</option>
-	  <option value="GenBank">GenBank</option>
-	  <option value="Plain Text">Plain Text</option>
-	</select>
-  </div>
-  <div id="tabs-2">
-    Codon sequence: <input type="text" name="sequenceText"><br>
-  </div>
-</div><br>
+  <div id="tabs">
+    <ul>
+      <li><a href="#tabs-1">Upload a File</a></li>
+      <li><a href="#tabs-2">Input Sequence</a></li>
+    </ul>
+    <div id="tabs-1">
+      Codon Sequence: <input type="file" id="sequenceFile"><br>
+      File Format: 
+      <select>
+        <option value="FASTA">FASTA</option>
+	<option value="GenBank">GenBank</option>
+	<option value="Plain Text">Plain Text</option>
+      </select>
+    </div>
+    <div id="tabs-2">
+      Codon Sequence: <input type="text" id="sequenceText"><br>
+    </div>
+  </div><br>
 
-<div id="generalInput">
-  Comparison Host: 
-  <select id="comparison">
-    <option value="GenBank">GenBank</option>
-	<option value="RefSeq">RefSeq</option>
-	<option value="Custom List">Custom List</option>
-  </select><br>
-  <div id="customList" style="display:none">
-    <br>
-    <table>
-      <tbody>
-	    <tr>
-		  Species:<input type="text" name="speciesInput">
-		  Input Type:
+  <div id="generalInput">
+    Comparison Host: 
+    <select id="comparison">
+      <option value="GenBank">GenBank</option>
+      <option value="RefSeq">RefSeq</option>
+      <option value="Custom List">Custom List</option>
+    </select><br>
+    <div id="customList" style="display:none">
+      <table>
+        <tbody>
+          <tr>
+            <td>
+	      Species:<input type="text" id="speciesInput"/>
+              Input Type:
 	      <select>
-		    <option value="Organism Name">Organism Name</option>
-		    <option value="Taxonomy Id">Taxonomy Id</option>
-		  </select>
-		</tr>  
-	  </tbody>
-    </table>
-  </div>
-</div>
- 
- 
+                <option value="Organism Name">Organism Name</option>
+	        <option value="Taxonomy Id">Taxonomy Id</option>
+              </select>
+              <button type="button" id="add">Add New Row</button>
+              <button type="button" id="remove" style="display:none">Remove</button>
+            </td>
+          </tr>  
+        </tbody>
+      </table>
+    </div>
+    <button type="button" id="submitRequest" disabled>Submit Request</button>
+  </div> 
 </body>
 </html>
