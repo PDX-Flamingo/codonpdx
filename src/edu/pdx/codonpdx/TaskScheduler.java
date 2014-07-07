@@ -8,14 +8,9 @@ import java.util.Locale;
 import java.util.UUID;
 
 // This class is used to write messages to a RabbitMQ server, where a Python service is running celery to schedule jobs
-public class TaskScheduler {
+public class TaskScheduler extends QueueObject {
 
     // Queue related variables
-    private String QUEUE_NAME;
-    private String HOST;
-    private Connection connection;
-    private ConnectionFactory factory;
-    private Channel channel;
     private AMQP.BasicProperties properties;
 
     //Message strings
@@ -29,14 +24,6 @@ public class TaskScheduler {
         openConnect();
     }
 
-    // Opens a connection based on set queue and host
-    public void openConnect() throws IOException {
-        factory = new ConnectionFactory();
-        factory.setHost(HOST);
-        connection = factory.newConnection();
-        channel = connection.createChannel();
-    }
-
     // Schedule a task with a random UUID for the id.  id is returned
     // so that the results of the message can be retrieved if needed
     public String scheduleTask(String task) throws IOException {
@@ -48,12 +35,6 @@ public class TaskScheduler {
         channel.basicPublish(QUEUE_NAME, QUEUE_NAME, properties, message.getBytes("ASCII"));
         System.out.println(" Sent : " + message);
         return id;
-    }
-
-    // method provided to clean up when user finished
-    public void closeConnect() throws IOException {
-        channel.close();
-        connection.close();
     }
 
     // main method just for testing
