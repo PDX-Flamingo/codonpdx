@@ -7,7 +7,7 @@ import com.rabbitmq.client.QueueingConsumer;
 import java.io.IOException;
 
 /**
- * Created by Robert on 7/5/14.
+ * Basic class for consuming the response queues from scheduling tasks.
  */
 public class ResponseConsumer extends QueueObject {
 
@@ -17,26 +17,27 @@ public class ResponseConsumer extends QueueObject {
         openConnect();
     }
 
-    public getResponseFromQueue
+    // Sets up the consumer for the Q, and then consumes a single message.
+    // This should probably be made into two separate classes
+    public String getResponseFromQueue() throws IOException, InterruptedException {
+        if(!connectToQueue()) {
+            return null;
+        }
+        QueueingConsumer consumer = new QueueingConsumer(channel);
+        channel.basicConsume(QUEUE_NAME, true, consumer);
+        QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+        String message = new String(delivery.getBody());
+        System.out.println(" [x] Received '" + message + "'");
+        return message;
+    }
 
     public static void main(String[] argv)
             throws java.io.IOException,
             java.lang.InterruptedException {
 
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-        QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicConsume(QUEUE_NAME, true, consumer);
-
-        while (true) {
-            QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-            String message = new String(delivery.getBody());
-            System.out.println(" [x] Received '" + message + "'");
-        }
+        ResponseConsumer rc = new ResponseConsumer(argv[0], "localhost");
+        String message = rc.getResponseFromQueue();
+        rc.closeConnect();
+        System.exit(1);
     }
-}
+ }

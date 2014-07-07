@@ -1,6 +1,6 @@
 package edu.pdx.codonpdx;
 
-import com.rabbitmq.client.*; // get this from http://www.rabbitmq.com/java-client.html
+import com.rabbitmq.client.*;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -13,7 +13,7 @@ public class TaskScheduler extends QueueObject {
     // Queue related variables
     private AMQP.BasicProperties properties;
 
-    //Message strings
+    //Message strings, some of this could probably be removed.
     private String testString = "{\"expires\": null, \"utc\": true, \"args\": [%1$d], \"chord\": null, \"callbacks\": null, \"errbacks\": null, \"taskset\": \"%2$s\", \"id\": \"%3$s\", \"retries\": 0, \"task\": \"%4$s\", \"timelimit\": [null, null], \"eta\": null, \"kwargs\": {}}";
 
     // Constrctor
@@ -27,6 +27,10 @@ public class TaskScheduler extends QueueObject {
     // Schedule a task with a random UUID for the id.  id is returned
     // so that the results of the message can be retrieved if needed
     public String scheduleTask(String task) throws IOException {
+        if(!this.connectToQueue()) {
+            System.out.println("Could not connect to queue to write");
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);  // Some of this should be moved to separate methods
         String taskList = UUID.randomUUID().toString();  // find out if taskList is even needed
@@ -40,8 +44,9 @@ public class TaskScheduler extends QueueObject {
     // main method just for testing
     public static void main(String[] argv)
             throws java.io.IOException {
-        TaskScheduler ts = new TaskScheduler("celery", "localhost");
-        ts.scheduleTask("proj.tasks.random_list");
+        TaskScheduler ts = new TaskScheduler(argv[0], "localhost");
+        ts.scheduleTask("proj.tasks.random_int");
         ts.closeConnect();
+        System.exit(1);
     }
 }

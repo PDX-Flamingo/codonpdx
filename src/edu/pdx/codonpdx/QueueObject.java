@@ -7,9 +7,12 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 
 /**
- * Created by Robert on 7/6/2014.
+ * This is an abstract class which encompasses some of the shared
+ * behavior between any of the classes which interact with the message
+ * queues.
  */
 public abstract class QueueObject {
+    // Basic connection information
     protected String QUEUE_NAME;
     protected String HOST;
     protected Connection connection;
@@ -23,6 +26,19 @@ public abstract class QueueObject {
         factory.setHost(HOST);
         connection = factory.newConnection();
         channel = connection.createChannel();
+    }
+
+    // Attempts to connect to the queue requests, if fails, returns false
+    public boolean connectToQueue() {
+        try {
+            channel.queueDeclarePassive(QUEUE_NAME);
+            return true;
+        }
+        catch (IOException e)
+        {
+            System.out.println("Queue does not exist");
+            return false;
+        }
     }
 
     // method provided to clean up when user finished
