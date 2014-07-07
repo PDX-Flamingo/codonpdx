@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>jQuery UI Tabs - Default functionality</title>
+  <title>Sequence Input</title>
   
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript">
     google.load("jquery", "1.4.2");
-    google.load("jqueryui", "1.7.2");
   </script>
-  
-  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/smoothness/jquery-ui.css" />
+  <script type="text/javascript" src="js/simpletabs_1.3.js"></script>
+  <style type="text/css">
+    @import "css/simpletabs.css"
+  </style>
   
   <script type="text/javascript">
-    $(document).ready(function() {
-      $( "#tabs" ).tabs();
-	  
+    $(document).ready(function() { 
 	  $("#comparison").change(function() {
 	    if($("#comparison").val() == "Custom List") {
 		  $("#customList").show()
@@ -59,6 +58,7 @@
     function bindValidate() {
       $("#remove").click(validateFormsNotEmpty)
       $("#add").click(validateFormsNotEmpty)
+      $("#sequenceName").bind("change keyup input paste", validateFormsNotEmpty)
       $("#sequenceText").bind("change keyup input paste", validateFormsNotEmpty)
       $("#sequenceFile").bind("change keyup input paste", validateFormsNotEmpty)
       $("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
@@ -67,17 +67,17 @@
         $(value).find("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
       })
       $("#comparison").bind("change keyup input paste", validateFormsNotEmpty)
-      $("ul").bind("click change keyup input paste",validateFormsNotEmpty)
+      $(".simpleTabsNavigation").bind("click change keyup input paste",validateFormsNotEmpty)
     }
 
     function validateFormsNotEmpty() {
       valid = true
-      tabs = $("#tabs").find("div")
-      if(tabs[0].className.indexOf("ui-tabs-hide") == -1) {
+      tabs = $(".simpleTabs").find("a")
+      if(tabs[0].className.indexOf("current") != -1) {
         valid = valid && ($("#sequenceFile").val() != "")
       } 
       else {
-        valid = valid && ($("#sequenceText").val() != "")
+        valid = valid && ($("#sequenceText").val() != "") && ($("#sequenceName").val() != "")
       }
 
       if($("#customList").is(":visible")) {
@@ -98,12 +98,12 @@
 <body>
   <h2>Codon Analysis</h2>
  
-  <div id="tabs">
-    <ul>
-      <li><a href="#tabs-1">Upload a File</a></li>
-      <li><a href="#tabs-2">Input Sequence</a></li>
+  <div class="simpleTabs">
+    <ul class="simpleTabsNavigation">
+      <li><a href="#">Upload a File</a></li>
+      <li><a href="#">Input Sequence</a></li>
     </ul>
-    <div id="tabs-1">
+    <div class="simpleTabsContent">
       Codon Sequence: <input type="file" id="sequenceFile"><br>
       File Format: 
       <select>
@@ -112,7 +112,8 @@
 	<option value="Plain Text">Plain Text</option>
       </select>
     </div>
-    <div id="tabs-2">
+    <div class="simpleTabsContent">
+      Name: <input type="text" id="sequenceName"> <br>
       Codon Sequence: <input type="text" id="sequenceText"><br>
     </div>
   </div><br>
@@ -120,9 +121,9 @@
   <div id="generalInput">
     Comparison Host: 
     <select id="comparison">
-      <option value="GenBank">GenBank</option>
-      <option value="RefSeq">RefSeq</option>
       <option value="Custom List">Custom List</option>
+      <option value="GenBank">GenBank</option>
+      <option value="RefSeq" selected="selected">RefSeq</option>
     </select><br>
     <div id="customList" style="display:none">
       <table>
