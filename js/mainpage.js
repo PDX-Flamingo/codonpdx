@@ -1,4 +1,4 @@
-
+//Page setup
 $(document).ready(function() {
   $("#comparison").change(function() {
     if($("#comparison").val() == "Custom List") {
@@ -17,12 +17,14 @@ $(document).ready(function() {
   bindValidate()
 });
 
+//Remove a row from the custom list
 function removeFromCustomList() {
   $(this).parent().parent().remove()
   bindValidate()
   validateFormsNotEmpty()
 }
 
+//Make sure there are add and remove buttons showing where they need to be
 function validateCustomListButtons() {
   customList = $("#customList")
   if($(customList).find("td").length == 1) {
@@ -33,6 +35,7 @@ function validateCustomListButtons() {
   $(customList).find("tr:last").find("#add").show()
 }
 
+//Add something to the custom list and bind buttons
 function addToCustomList() {
   newRow = '<tr><td>Species:<input type="text" id="speciesInput"/>\
              Input Type:\
@@ -55,6 +58,7 @@ function addToCustomList() {
   validateFormsNotEmpty()
 }
 
+//Bind all changeable fields so that when they are changed the forms are validated
 function bindValidate() {
   $("#remove").click(validateFormsNotEmpty)
   $("#add").click(validateFormsNotEmpty)
@@ -70,6 +74,7 @@ function bindValidate() {
   $(".simpleTabsNavigation").bind("click change keyup input paste",validateFormsNotEmpty)
 }
 
+//Make sure that no fields that should not be empty are empty
 function validateFormsNotEmpty() {
   valid = true
   tabs = $(".simpleTabs").find("a")
