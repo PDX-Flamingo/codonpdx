@@ -18,6 +18,7 @@
 *.ipr
 *.iml
 *.iws
+.DS_STORE
 
 ## Additional for IntelliJ
 out/
