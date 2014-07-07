@@ -13,9 +13,47 @@ $(document).ready(function() {
 
   $("#customList").find("#add").click(addToCustomList)
   $("#customList").find("#add").click(validateCustomListButtons)
+  $("#submitRequest").click(submitRequest)
   validateFormsNotEmpty()
   bindValidate()
 });
+
+//Submit request to server
+function submitRequest() {
+  data = new FormData()
+
+  if(isUsingCustomList()) {
+    var customList = []
+    rows = $("#customList").find("tbody").children().children()
+    $.each(rows, function(index, value) {
+      var row = []
+      row.push($(value).find("#speciesInputType").val())
+      row.push($(value).find("#speciesInput").val())
+      customList.push(row)
+    })
+    data.append('customList', customList)
+  }
+  else {
+    data.append('comparisonHost', $("#comparison").val())
+  }
+
+  if(isUploadingFile()) {
+    data.append('file', $("#sequenceFile")[0].files[0])
+    data.append('fileType', $("#fileType").val())
+  }
+  else {
+    data.append('sequenceName', $("#sequenceName").val())
+    data.append('sequenceText', $("#sequenceText").val())
+  }
+
+  $.ajax({
+      url: '/submitRequest', //Need to find out what this is
+      data: data,
+      processData: false,
+      contentType: false,
+      type: 'POST'
+  })
+}
 
 //Remove a row from the custom list
 function removeFromCustomList() {
@@ -39,7 +77,7 @@ function validateCustomListButtons() {
 function addToCustomList() {
   newRow = '<tr><td>Species:<input type="text" id="speciesInput"/>\
              Input Type:\
-             <select>\
+             <select id="speciesInputType">\
                <option value="Organism Name">Organism Name</option>\
                <option value="Taxonomy Id">Taxonomy Id</option>\
              </select>\
@@ -74,18 +112,28 @@ function bindValidate() {
   $(".simpleTabsNavigation").bind("click change keyup input paste",validateFormsNotEmpty)
 }
 
+//Returns true if custom list is selected
+function isUsingCustomList() {
+  return $("#customList").is(":visible")
+}
+
+//Returns true if the file upload tab is selected
+function isUploadingFile() {
+  return $(".simpleTabs").find("a")[0].className.indexOf("current") != -1
+}
+
 //Make sure that no fields that should not be empty are empty
 function validateFormsNotEmpty() {
   valid = true
   tabs = $(".simpleTabs").find("a")
-  if(tabs[0].className.indexOf("current") != -1) {
+  if(isUploadingFile()) {
     valid = valid && ($("#sequenceFile").val() != "")
   }
   else {
     valid = valid && ($("#sequenceText").val() != "") && ($("#sequenceName").val() != "")
   }
 
-  if($("#customList").is(":visible")) {
+  if(isUsingCustomList()) {
     rows = $("#customList").find("tbody").children().children()
     $.each(rows, function(index, value) {
       valid = valid && ($(value).find("#speciesInput").val() != "")

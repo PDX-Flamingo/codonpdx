@@ -27,7 +27,7 @@
     <div class="simpleTabsContent">
       Codon Sequence: <input type="file" id="sequenceFile"><br>
       File Format: 
-      <select>
+      <select id="fileType">
         <option value="FASTA">FASTA</option>
 	<option value="GenBank">GenBank</option>
 	<option value="Plain Text">Plain Text</option>
@@ -51,11 +51,11 @@
         <tbody>
           <tr>
             <td>
-	      Species:<input type="text" id="speciesInput"/>
+	          Species:<input type="text" id="speciesInput"/>
               Input Type:
-	      <select>
+	          <select id="speciesInputType">
                 <option value="Organism Name">Organism Name</option>
-	        <option value="Taxonomy Id">Taxonomy Id</option>
+	            <option value="Taxonomy Id">Taxonomy Id</option>
               </select>
               <button type="button" id="add">Add New Row</button>
               <button type="button" id="remove" style="display:none">Remove</button>
