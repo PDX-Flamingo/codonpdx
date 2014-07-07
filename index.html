@@ -27,6 +27,7 @@
 	  })
 
       $("#customList").find("#add").click(addToCustomList)
+      $("#customList").find("#add").click(validateCustomListButtons)
       validateFormsNotEmpty()
       bindValidate()
     });
@@ -37,6 +38,14 @@
       validateFormsNotEmpty()
     }
 
+    function validateCustomListButtons() {
+      customList = $("#customList")
+      if($(customList).find("td").length == 1) {
+        $(customList).find("#remove").hide()
+        $(customList).find("#add").show()
+      }
+    }
+
     function addToCustomList() {
       newRow = '<tr><td>Species:<input type="text" id="speciesInput"/>\
               Input Type:\
@@ -45,12 +54,16 @@
                 <option value="Taxonomy Id">Taxonomy Id</option>\
               </select>\
               <button type="button" id="add">Add New Row</button>\
-              <button type="button" id="remove" style="display:none">Remove</button></td></tr>'
+              <button type="button" id="remove">Remove</button></td></tr>'
       $(this).hide()
       $(this).parent().find("#remove").show()
       $(this).parent().find("#remove").click(removeFromCustomList)
+      $(this).parent().find("#remove").click(validateCustomListButtons)
       $('#customList').find('tbody').append(newRow)
       $("#customList tr:last").find("#add").click(addToCustomList)
+      $("#customList tr:last").find("#remove").click(removeFromCustomList)
+      $("#customList tr:last").find("#add").click(validateCustomListButtons)
+      $("#customList tr:last").find("#remove").click(validateCustomListButtons)
       bindValidate()
       validateFormsNotEmpty()
     }
