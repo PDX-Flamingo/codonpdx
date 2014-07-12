@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 /**
  * Created by Robert on 7/7/2014.
  */
-public class codonPDX extends HttpServlet{
+public class CodonPDX extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
 
