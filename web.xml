@@ -4,20 +4,20 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
             version="2.4">
 
-    <display-name>codonPDX</display-name>
+    <display-name>CodonPDX</display-name>
     <description>
         This is a web application which provides a graphical UI to a backend process of comparing organism codons in
         order to determine likely hosts.
     </description>
 
     <servlet>
-            <servlet-name>codonPDX</servlet-name>
+            <servlet-name>CodonPDX</servlet-name>
             <servlet-class>edu.pdx.codonpdx.CodonPDX</servlet-class>
     </servlet>
 
     <servlet-mapping>
-            <servlet-name>codonPDX</servlet-name>
-            <url-pattern>/</url-pattern>
+            <servlet-name>CodonPDX</servlet-name>
+            <url-pattern>/app/*</url-pattern>
     </servlet-mapping>
 
 </web-app>

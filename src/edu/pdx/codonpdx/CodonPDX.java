@@ -18,10 +18,11 @@ public class CodonPDX extends HttpServlet{
             PrintWriter out = response.getWriter();
             out.println(request.getRequestURI());
             switch (request.getRequestURI()) {
-               case "/codonpdx/main":
-                   request.getRequestDispatcher("homePage.jps").forward(request, response);
+                case "/codonpdx/app":
+                   request.getRequestDispatcher("/homePage.jsp").forward(request, response);
                     break;
-                case "/codonpdx/testconnection":
+                case "/codonpdx/app/testconnection":
+                case "/codonpdx/app/testconnection/":
                     TaskScheduler ts = new TaskScheduler("celery", "localhost");
                     String id = ts.scheduleTask("proj.tasks.random_int").replace("-", "");
                     ResponseConsumer qc = new ResponseConsumer(id, "localhost");
@@ -39,7 +40,7 @@ public class CodonPDX extends HttpServlet{
                     out.println(message);
                     break;
                 default:
-                    request.getRequestDispatcher("homePage.jsp").forward(request, response);
+                    response.sendRedirect("/codonpdx/app");
             }
         }
         catch (InterruptedException e) {
