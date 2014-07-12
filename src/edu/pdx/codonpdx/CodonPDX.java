@@ -18,11 +18,10 @@ public class CodonPDX extends HttpServlet{
             PrintWriter out = response.getWriter();
             out.println(request.getRequestURI());
             switch (request.getRequestURI()) {
-                case "/codonpdx/app":
-                   request.getRequestDispatcher("/homePage.jsp").forward(request, response);
+               case "/codonpdx-zac/app":
+                   request.getRequestDispatcher("homePage.jsp").forward(request, response);
                     break;
-                case "/codonpdx/app/testconnection":
-                case "/codonpdx/app/testconnection/":
+                case "/codonpdx-zac/testconnection":
                     TaskScheduler ts = new TaskScheduler("celery", "localhost");
                     String id = ts.scheduleTask("proj.tasks.random_int").replace("-", "");
                     ResponseConsumer qc = new ResponseConsumer(id, "localhost");
@@ -39,6 +38,9 @@ public class CodonPDX extends HttpServlet{
 
                     out.println(message);
                     break;
+                case "codonpdx-zac/testing_queue":
+
+                    break;
                 default:
                     response.sendRedirect("/codonpdx/app");
             }
@@ -53,6 +55,31 @@ public class CodonPDX extends HttpServlet{
 
     }
 
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException  {
+        try {
+            PrintWriter out = response.getWriter();
+            out.println(request.getRequestURI());
+            switch (request.getRequestURI()) {
+                case "codonpdx-zac/app/submitRequest":
+                    String sequenceText = request.getParameter("data.sequenceText");
+                    out.println("<!DOCTYPE html>");
+                    out.println("<html lang=\"en\">");
+                    out.println("<head>");
+                    out.println("  <title>testing</title>");
+                    out.println("</head>");
+                    out.println("<body>");
+                    out.println(sequenceText);
+                    out.println("</body>");
+                    out.println("</html>");
+                break;
+            }
+        } catch (IOException e) {
+            PrintWriter out = response.getWriter();
+            out.println(e.getMessage());
+        }
+    }
     //private void testConnection()
 
 }
