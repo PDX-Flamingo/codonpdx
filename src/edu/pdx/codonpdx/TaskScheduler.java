@@ -1,4 +1,4 @@
-package edu.pdx.pdxcodon;
+package edu.pdx.codonpdx;
 
 import com.rabbitmq.client.*;
 

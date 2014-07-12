@@ -1,8 +1,5 @@
-package edu.pdx.pdxcodon;
+package edu.pdx.codonpdx;
 
-import com.rabbitmq.client.QueueingConsumer;
-
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +10,7 @@ import java.io.PrintWriter;
 /**
  * Created by Robert on 7/7/2014.
  */
-public class PDXcodon extends HttpServlet{
+public class codonPDX extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
 
