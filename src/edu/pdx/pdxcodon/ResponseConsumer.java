@@ -1,4 +1,4 @@
-package edu.pdx.codonpdx;
+package edu.pdx.pdxcodon;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
