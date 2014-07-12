@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 
 /**
  * Created by Robert on 7/7/2014.
@@ -60,19 +63,40 @@ public class CodonPDX extends HttpServlet{
             throws ServletException, IOException  {
         try {
             PrintWriter out = response.getWriter();
-            out.println(request.getRequestURI());
+            //out.println(request.getRequestURI());
             switch (request.getRequestURI()) {
-                case "codonpdx-zac/app/submitRequest":
-                    String sequenceText = request.getParameter("data.sequenceText");
-                    out.println("<!DOCTYPE html>");
-                    out.println("<html lang=\"en\">");
-                    out.println("<head>");
-                    out.println("  <title>testing</title>");
-                    out.println("</head>");
-                    out.println("<body>");
-                    out.println(sequenceText);
-                    out.println("</body>");
-                    out.println("</html>");
+                case "/codonpdx-zac/app":
+                    String username = request.getParameter("username");
+                    String password = request.getParameter("password");
+                    String codonstring = request.getParameter("codonstring");
+                    String filenameforwrite = request.getParameter("filenameforwrite");
+                    out.println("Email " + username);
+                    out.println("Password entered " + password);
+                    out.println("codon string ");
+                    out.println(codonstring);
+                    String content = username + "\n" + password + "\n" + codonstring;
+                    out.println(content);
+
+                    File file = new File("/opt/share/" + filenameforwrite + ".html");
+
+                    // if file doesnt exists, then create it
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
+
+                    FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                    BufferedWriter bw = new BufferedWriter(fw);
+                    bw.write(content);
+                    bw.close();
+
+                    //PrintWriter printingfileout = new PrintWriter(new FileWriter("/opt/share/" + filenameforwrite + "/.html"));
+                    //if (!printingfileout.exists()) {
+                    //    file.createNewFile();
+                    //}
+                    //printingfileout.print(content);
+                    //printingfileout.close();
+
+
                 break;
             }
         } catch (IOException e) {
