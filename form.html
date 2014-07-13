@@ -9,12 +9,13 @@
 </form>
 
 <form method="post" action="app">
-    <input type="submit" value="post method" />
+    <input type="submit" value="post method" enctype="multipart/form-data">/>
     <fieldset>
         <legend>data to be spat out</legend>
         Email: <input type="text" name="username" /><br /><br />
         Password: <input type="password" name="password" /><br /><br />
         Codon String: <input type="text" name="codonstring" /><br /><br />
+        file: <input type="file" name="file" />
     </fieldset>
 </form>
 
