@@ -74,6 +74,7 @@ public class CodonPDX extends HttpServlet{
                     String content = username + "\n" + password + "\n" + codonstring;
                     out.println(content);
 
+                    //File file = new File("/opt/share/" + filenameforwrite + ".html");
                     File file = new File("/opt/share/" + filename + ".html");
 
                     // if file doesnt exists, then create it
