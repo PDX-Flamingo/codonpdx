@@ -1,5 +1,7 @@
 package edu.pdx.codonpdx;
 
+import org.json.simple.JSONObject;
+
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,15 +22,19 @@ public class CodonDB {
         this.url = url;
         this.user = user;
         this.password = password;
+        openConnection();
     }
 
     private boolean openConnection() {
         try {
+            Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection(url, user, password);
         }
         catch(SQLException sqle) {
             System.out.println(sqle.getMessage());
             return false;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return true;
     }
@@ -44,7 +50,22 @@ public class CodonDB {
         return sl;
     }
 
+    public JSONObject getResultsAsJSON(String UUID) throws SQLException {
+        if(con == null)  {
+            JSONObject error = new JSONObject();
+            error.put("error", "connection not made");
+            return error;
+        }
 
+        st = con.createStatement();
+        rs = st.executeQuery("select organism1, organism2, score from results where job_uuid='" + UUID + "'");
+        JSONObject result = new JSONObject();
+        while(rs.next()) {
+            result.put(rs.getString(2), rs.getDouble(3));
+        }
+        rs.close();
+        return result;
+    }
 
     public static void main(String [] args) {
         try {
