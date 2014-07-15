@@ -51,7 +51,18 @@ function submitRequest() {
       data: data,
       processData: false,
       contentType: false,
-      type: 'POST'
+      type: 'POST',
+      success: function(response) {
+        if(response["UUID"]) {
+          window.location.href = "results/" + response["UUID"]; //Need to find out what this is as well
+        }
+        else {
+          alert("Something went wrong") //Need to make this better
+        }
+      },
+      error: function() {
+          alert("Something went wrong") //Need to make this better
+      }
   })
 }
 
