@@ -1,23 +1,28 @@
 package edu.pdx.codonpdx;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+
 import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Robert on 7/7/2014.
  */
+
+@MultipartConfig
 public class CodonPDX extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
@@ -36,8 +41,11 @@ public class CodonPDX extends HttpServlet{
 
                 case "results":
                     out.print(getResults(URI[3]));
+                    break;
+                case "submit_job":
+                    submit_test(response);
+                    break;
                 case "codonpdx/testing_queue":
-
                     break;
                 default:
                     response.sendRedirect("/codonpdx/app");
@@ -57,45 +65,18 @@ public class CodonPDX extends HttpServlet{
             throws ServletException, IOException  {
         try {
             PrintWriter out = response.getWriter();
-            //out.println(request.getRequestURI());
+            out.println(request.getRequestURI());
             switch (request.getRequestURI()) {
-                case "/codonpdx/app":
-                    if(ServletFileUpload.isMultipartContent(request)) {
+                case "/codonpdx/submitRequest":
+                    out.println(ServletFileUpload.isMultipartContent(request));
 
+                    out.println(request.getParameterMap().size());
+
+                    for (String s : request.getParameterMap().keySet()) {
+                        out.print(s);
                     }
-                    String username = request.getParameter("username");
-                    String password = request.getParameter("password");
-                    String codonstring = request.getParameter("codonstring");
-                    String filename = request.getParameter("filenameforwrite");
-                    out.println("Email " + username);
-                    out.println("Password entered " + password);
-                    out.println("codon string ");
-                    out.println(codonstring);
-                    String content = username + "\n" + password + "\n" + codonstring;
-                    out.println(content);
+                    break;
 
-                    //File file = new File("/opt/share/" + filenameforwrite + ".html");
-                    File file = new File("/opt/share/" + filename + ".html");
-
-                    // if file doesnt exists, then create it
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-
-                    FileWriter fw = new FileWriter(file.getAbsoluteFile());
-                    BufferedWriter bw = new BufferedWriter(fw);
-                    bw.write(content);
-                    bw.close();
-
-                    //PrintWriter printingfileout = new PrintWriter(new FileWriter("/opt/share/" + filenameforwrite + "/.html"));
-                    //if (!printingfileout.exists()) {
-                    //    file.createNewFile();
-                    //}
-                    //printingfileout.print(content);
-                    //printingfileout.close();
-
-
-                break;
             }
         } catch (IOException e) {
             PrintWriter out = response.getWriter();
@@ -103,10 +84,21 @@ public class CodonPDX extends HttpServlet{
         }
     }
 
+    private static String getValue(Part part) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream(), "UTF-8"));
+        StringBuilder value = new StringBuilder();
+        char[] buffer = new char[1024];
+        for (int length = 0; (length = reader.read(buffer)) > 0;) {
+            value.append(buffer, 0, length);
+        }
+        return value.toString();
+    }
+
     private void testConnection(HttpServletResponse response) throws InterruptedException, IOException {
         PrintWriter out = response.getWriter();
         TaskScheduler ts = new TaskScheduler("celery", "localhost");
-        String id = ts.scheduleTask("proj.tasks.random_int").replace("-", "");
+        String id = ts.scheduleTask("codonpdx.tasks.random_int").replace("-", "");
+        Thread.sleep(4000);
         ResponseConsumer qc = new ResponseConsumer(id, "localhost");
         String message = qc.getResponseFromQueue();
         int i = 0;
@@ -120,6 +112,15 @@ public class CodonPDX extends HttpServlet{
         qc.closeConnect();
 
         out.println(message);
+    }
+
+    private void submit_test(HttpServletResponse response) throws InterruptedException, IOException {
+        PrintWriter out = response.getWriter();
+        TaskScheduler ts = new TaskScheduler("celery", "localhost");
+        String id = ts.scheduleTask("codonpdx.tasks.trigger_demo_behavior", "/opt/share/flu");
+        ts.closeConnect();
+
+        out.println(id);
     }
 
     private JSONObject getResults(String uuid) {
