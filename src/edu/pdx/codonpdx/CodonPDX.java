@@ -14,9 +14,7 @@ import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Robert on 7/7/2014.
@@ -42,9 +40,6 @@ public class CodonPDX extends HttpServlet{
                 case "results":
                     out.print(getResults(URI[3]));
                     break;
-                case "submit_job":
-                    submit_test(response);
-                    break;
                 case "codonpdx/testing_queue":
                     break;
                 default:
@@ -65,22 +60,32 @@ public class CodonPDX extends HttpServlet{
             throws ServletException, IOException  {
         try {
             PrintWriter out = response.getWriter();
-            out.println(request.getRequestURI());
+            String uuid = UUID.randomUUID().toString().replace("-", "");
             switch (request.getRequestURI()) {
                 case "/codonpdx/submitRequest":
-                    out.println(ServletFileUpload.isMultipartContent(request));
+                    ParseResponse prbody = new ParseResponse(request.getReader());
+                    prbody.parseInput();
 
-                    out.println(request.getParameterMap().size());
+                    File f = new File("/opt/share/", uuid);
+                    Writer fileWriter = new FileWriter(f);
+                    BufferedWriter bw = new BufferedWriter(fileWriter);
 
-                    for (String s : request.getParameterMap().keySet()) {
-                        out.print(s);
-                    }
+                    bw.write(prbody.fileContents);
+                    bw.close();
+                    fileWriter.close();
+                    JSONObject json = new JSONObject();
+                    json.put("UUID", uuid);
+                    response.setContentType("application/json");
+                    scheduleRatioCompare(uuid, prbody.comparisonHost, prbody.fileType);
+                    out.println(json);
+
                     break;
-
             }
         } catch (IOException e) {
             PrintWriter out = response.getWriter();
             out.println(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -114,13 +119,10 @@ public class CodonPDX extends HttpServlet{
         out.println(message);
     }
 
-    private void submit_test(HttpServletResponse response) throws InterruptedException, IOException {
-        PrintWriter out = response.getWriter();
+    private void scheduleRatioCompare(String uuid, String database, String format) throws InterruptedException, IOException {
         TaskScheduler ts = new TaskScheduler("celery", "localhost");
-        String id = ts.scheduleTask("codonpdx.tasks.trigger_demo_behavior", "/opt/share/flu");
+        String id = ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format);
         ts.closeConnect();
-
-        out.println(id);
     }
 
     private JSONObject getResults(String uuid) {

@@ -40,4 +40,14 @@
         <url-pattern>/upload</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>CodonPDX</servlet-name>
+        <url-pattern>/submit_job/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CodonPDX</servlet-name>
+        <url-pattern>/submitRequest/*</url-pattern>
+    </servlet-mapping>
+
 </web-app>
