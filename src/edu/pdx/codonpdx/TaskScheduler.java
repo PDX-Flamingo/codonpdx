@@ -50,18 +50,10 @@ public class TaskScheduler extends QueueObject {
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);  // Some of this should be moved to separate methods
         String taskList = UUID.randomUUID().toString();  // find out if taskList is even needed
-        String message = formatter.format(startJob, "\"" + id + "\"", "\"/opt/share/" + id + "\"", database.toLowerCase(), format.toLowerCase(), taskList, id, task).toString();
+        String message = formatter.format(startJob, "\"" + id + "\"", "\"/opt/share/" + file + "\"", database.toLowerCase(), format.toLowerCase(), taskList, id, task).toString();
         channel.basicPublish(QUEUE_NAME, QUEUE_NAME, properties, message.getBytes("ASCII"));
         System.out.println(" Sent : " + message);
         return id;
     }
 
-    // main method just for testing
-    public static void main(String[] argv)
-            throws java.io.IOException {
-        TaskScheduler ts = new TaskScheduler(argv[0], "localhost");
-        ts.scheduleTask("proj.tasks.random_int");
-        ts.closeConnect();
-        System.exit(1);
-    }
 }
