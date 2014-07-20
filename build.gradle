@@ -1,29 +1,45 @@
 apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'war'
 
 sourceCompatibility = 1.7
+targetCompatibility = 1.7
 version = '1.0'
 
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/'
+        }
+        resources {
+            srcDir 'css/'
+            srcDir 'js/'
+        }
+    }
+}
+
+
 repositories {
-    flatDir { dirs "lib" }
     mavenCentral()
 }
+
 
 dependencies {
 	compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.3.4'
     compile group: 'commons-configuration', name: 'commons-configuration', version: '1.9'
     compile group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4'
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    compile group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.41'
+
+    compile group: 'org.apache.tomcat', name: 'tomcat-api', version: '7.0.54'
+    compile group: 'org.apache.tomcat', name: 'tomcat-annotations-api', version: '7.0.54'
+
     compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
 war {
-    from 'src/edu' // adds a file-set to the root of the archive
-    //webInf { from 'src/additionalWebInf' } // adds a file-set to the WEB-INF dir.
-    //classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
-    //classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
-    webXml = file('src/web.xml') // copies a file to WEB-INF/web.xml
+    from 'src'
+    webXml = file('web.xml')
 }
