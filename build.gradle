@@ -40,6 +40,18 @@ dependencies {
 }
 
 war {
-    from 'src'
+    from 'index.html'
+    from 'index.jsp'
+    from 'form.html'
+
+    from('css/') {
+        into('css')
+    }
+
+    from('js/') {
+        into('js')
+    }
+
+    archiveName = "codonpdx.war"
     webXml = file('web.xml')
 }
