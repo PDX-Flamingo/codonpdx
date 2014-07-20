@@ -15,11 +15,6 @@
             <servlet-class>edu.pdx.codonpdx.CodonPDX</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>FileUploadHandler</servlet-name>
-        <servlet-class>edu.pdx.codonpdx.FileUploadHandler</servlet-class>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>CodonPDX</servlet-name>
         <url-pattern>/app/*</url-pattern>
@@ -33,11 +28,6 @@
     <servlet-mapping>
         <servlet-name>CodonPDX</servlet-name>
         <url-pattern>/testconnection/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>FileUploadHandler</servlet-name>
-        <url-pattern>/upload</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

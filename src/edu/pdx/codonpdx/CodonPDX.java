@@ -27,7 +27,6 @@ public class CodonPDX extends HttpServlet{
 
         try {
             PrintWriter out = response.getWriter();
-            out.println(request.getRequestURI());
             String[] URI = request.getRequestURI().split("/");
             switch (URI.length < 3 ? "none" : URI[2]) {
                 case "app":
@@ -38,7 +37,16 @@ public class CodonPDX extends HttpServlet{
                     break;
 
                 case "results":
-                    out.print(getResults(URI[3]));
+                    if(URI.length == 4) {
+                        out.print(getResultsOneToMany(URI[3]));
+                        response.setContentType("application/json");
+                    }
+                    else if(URI.length == 5) {
+                        out.print(getResultsOneToOne(URI[3], URI[4]));
+                        response.setContentType("application/json");
+                    }
+                    else
+                        out.println("Error with request, check the URL again");
                     break;
                 case "codonpdx/testing_queue":
                     break;
@@ -125,10 +133,10 @@ public class CodonPDX extends HttpServlet{
         ts.closeConnect();
     }
 
-    private JSONObject getResults(String uuid) {
+    private JSONObject getResultsOneToMany(String uuid) {
         try {
             CodonDB db = new CodonDB("jdbc:postgresql://localhost/pdxcodon", "pdxcodon", "secret");
-            JSONObject result = db.getResultsAsJSON(uuid);
+            JSONObject result = db.getResultOneToManysAsJSON(uuid);
             return result;
         } catch(Exception e) {
             JSONObject obj = new JSONObject();
@@ -137,5 +145,20 @@ public class CodonPDX extends HttpServlet{
         }
 
     }
+
+    private JSONObject getResultsOneToOne(String uuid, String compareOrganism) {
+        try {
+            CodonDB db = new CodonDB("jdbc:postgresql://localhost/pdxcodon", "pdxcodon", "secret");
+            JSONObject result = db.getResultOneToOnesAsJSON(uuid, compareOrganism);
+            return result;
+        } catch(Exception e) {
+            JSONObject obj = new JSONObject();
+            obj.put("error", e.getMessage());
+            return obj;
+        }
+
+    }
+
+
 
 }
