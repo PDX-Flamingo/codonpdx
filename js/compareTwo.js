@@ -28,9 +28,16 @@ $(document).ready(function() {
 
 
     var chart = AmCharts.makeChart("chartdiv", {
+        "title": "title",
         "theme": "none",
         "type": "serial",
         "dataProvider": chartValues,
+        "legend": {
+            "markerType": "circle",
+            "position": "top",
+            "marginRight": 80,
+            "autoMargins": false
+        },
         "valueAxes": [{
             //"unit": "%",
             "position": "top",
