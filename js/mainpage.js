@@ -13,10 +13,58 @@ $(document).ready(function() {
 
     $("#customList").find("#add").click(addToCustomList)
     $("#customList").find("#add").click(validateCustomListButtons)
+    $("#submitRequest").click(submitRequest)
     validateFormsNotEmpty()
     bindValidate()
 });
 
+//Submit request to server
+function submitRequest() {
+    data = new FormData()
+
+    if(isUsingCustomList()) {
+        var customList = []
+        rows = $("#customList").find("tbody").children().children()
+        $.each(rows, function(index, value) {
+            var row = []
+            row.push($(value).find("#speciesInputType").val())
+            row.push($(value).find("#speciesInput").val())
+            customList.push(row)
+        })
+        data.append('customList', customList)
+    }
+    else {
+        data.append('comparisonHost', $("#comparison").val())
+    }
+
+    if(isUploadingFile()) {
+        data.append('file', $("#sequenceFile")[0].files[0])
+        data.append('fileType', $("#fileType").val())
+    }
+    else {
+        data.append('sequenceName', $("#sequenceName").val())
+        data.append('sequenceText', $("#sequenceText").val())
+    }
+
+    $.ajax({
+        url: '/submitRequest', //Need to find out what this is
+        data: data,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        success: function(response) {
+            if(response["UUID"]) {
+                window.location.href = "results/" + response["UUID"]; //Need to find out what this is as well
+            }
+            else {
+                alert("Something went wrong") //Need to make this better
+            }
+        },
+        error: function() {
+            alert("Something went wrong") //Need to make this better
+        }
+    })
+}
 
 //Remove a row from the custom list
 function removeFromCustomList() {
@@ -107,34 +155,4 @@ function validateFormsNotEmpty() {
         $("#submitRequest").removeAttr("disabled")
     else
         $("#submitRequest").attr('disabled', 'disabled')
-
-    fixForm()
 }
-
-//Makes sure the usingCustomList and uploadingFile forms are set correctly. Changes the ids of the custom list rows to be unique
-function fixForm() {
-    if(isUsingCustomList()) {
-        $("#usingCustomList").val("true")
-        rows = $("#customList").find("tbody").children().children()
-        var count = 1
-        $.each(rows, function(index, value) {
-            $($(value).find("input")[0]).attr("id","speciesInput")
-            $($(value).find("select")[0]).attr("id","speciesInputType")
-
-            $(value).find("#speciesInputType").attr("id","speciesInputType" + count)
-            $(value).find("#speciesInput").attr("id","speciesInput" + count)
-            count += 1
-        })
-    }
-    else {
-        $("#usingCustomList").val("false")
-    }
-
-    if(isUploadingFile()) {
-        $("#uploadingFile").val("true")
-    }
-    else {
-        $("#uploadingFile").val("false")
-    }
-}
-

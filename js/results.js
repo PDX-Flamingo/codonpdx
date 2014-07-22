@@ -14,17 +14,42 @@ var test = {
     "NW_006918330.1":4.791066743577456,"NC_001956.1":5.506982491816964,"NR_120167.1":9.614608932343835,"NC_010348.1":6.487877345511952,"NR_027209.1":8.073786151369598,
     "NR_119639.1":6.35345955384954,"NC_014714.1":10.455954066295535,"NC_008141.1":9.702240902852198,"NG_032011.2":1.132350731987886,"NC_020745.1":4.19148544452781,
     "NR_120102.1":8.644762935479683,"NC_003612.1":14.530319989450595,"NR_040902.1":7.11846810498366,"NW_006920364.1":6.095097286704065,"NC_002762.1":4.665542717252189,
-    "NR_041092.1":8.55543699158854,"NG_023325.1":1.9322282816847371,"NW_006919303.1":9.839180040326317};
+    "NR_041092.1":8.55543699158854,"NG_023325.1":1.9322282816847371,"NW_006919303.1":9.839180040326317, "target": "NC_005816.1"};
 
 $(document).ready(function() {
-    var data = test;
-    var UUID = "abcdefgh";
+    $.ajax({
+        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/c8a12420d8974932b50b67dac9859cdc', //Need to find out what this is
+        type: 'GET',
+        success: function(response) {
+            if(response["target"]) {
+                temp = response;
 
-    for (var k in data){
-        url = "results/" + UUID + "/" + k //Need to check on this, don't think it is right
-        newRow = '<tr><td>' + k + '</td><td>' + data[k] + '</td><td><a href="' + url +'">' + url + '</a></td></tr>'
-        $("#resultsTable").find("tbody").append(newRow)
-    }
+                var data = test;
+                var UUID = "abcdefgh";
+
+                $("#organism").append(data["target"])
+
+                for (var k in data){
+                    url = "results/" + UUID + "/" + k //Need to check on this, don't think it is right
+                    newRow = '<tr><td>' + k + '</td><td>' + data[k] + '</td><td><a href="' + url +'">' + url + '</a></td></tr>'
+                    if(k != "target") {
+                        $("#resultsTable").find("tbody").append(newRow)
+                    }
+                }
+                $("#missingData").hide()
+
+                //window.location.href = "results/" + response["UUID"]; //Need to find out what this is as well
+            }
+            else {
+                alert("Something went wrong") //Need to make this better
+            }
+        },
+        error: function() {
+            alert("Something went wrong") //Need to make this better
+        }
+    })
+
+
 });
 
 
