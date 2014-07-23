@@ -38,7 +38,7 @@ $(document).ready(function() {
                 $("#organism").append(data["target"])
 
                 for (var k in data){
-                    url = "results/" + UUID + "/" + k
+                    url = window.location.href + "/" + k
                     newRow = '<tr><td>' + k + '</td><td>' + data[k] + '</td><td><a href="' + url +'">' + url + '</a></td></tr>'
                     if(k != "target") {
                         $("#resultsTable").find("tbody").append(newRow)
