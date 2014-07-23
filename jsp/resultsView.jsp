@@ -9,8 +9,8 @@
         google.load("jquery", "1.4.2");
     </script>
 
-    <script type= "text/javascript" src="../../js/sorttable.js"></script>
-    <script type="text/javascript" src="../../js/results.js"></script>
+    <script type= "text/javascript" src="/codonpdx/js/sorttable.js"></script>
+    <script type="text/javascript" src="/codonpdx/js/results.js"></script>
 
     <style>
         table.sortable thead {
