@@ -40,7 +40,7 @@ dependencies {
 }
 
 war {
-    from 'index.html'
+    from 'index.jsp'
     from 'index.jsp'
     from 'form.html'
 

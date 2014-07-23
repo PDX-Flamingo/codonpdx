@@ -7,6 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+//import org.jasig.cas.client.authentication.AttributePrincipal;
+//import org.jasig.cas.client.validation.Assertion;
+//import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
+//import org.jasig.cas.client.validation.TicketValidationException;
+
 import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -30,10 +35,19 @@ public class CodonPDX extends HttpServlet{
             String[] URI = request.getRequestURI().split("/");
             switch (URI.length < 3 ? "none" : URI[2]) {
                 case "app":
-                    request.getRequestDispatcher("homePage.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/homePage.jsp").forward(request, response);
                     break;
                 case "testconnection":
                     testConnection(response);
+                    break;
+
+                case "resultsView":
+                    if(URI.length == 4) {
+                        request.getRequestDispatcher("/jsp/resultsView.jsp").forward(request, response);
+                    }
+                    else if (URI.length == 5) {
+                        request.getRequestDispatcher("/jsp/compareTwo.jsp").forward(request, response);
+                    }
                     break;
 
                 case "results":
@@ -51,7 +65,7 @@ public class CodonPDX extends HttpServlet{
                 case "codonpdx/testing_queue":
                     break;
                 default:
-                    response.sendRedirect("/codonpdx/app");
+                    //response.sendRedirect("/codonpdx/app");
             }
         } catch (InterruptedException e) {
             PrintWriter out = response.getWriter();
