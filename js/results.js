@@ -17,35 +17,41 @@ var test = {
     "NR_041092.1":8.55543699158854,"NG_023325.1":1.9322282816847371,"NW_006919303.1":9.839180040326317, "target": "NC_005816.1"};
 
 $(document).ready(function() {
+    URI = window.location.href.split("/");
     $.ajax({
-        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/c8a12420d8974932b50b67dac9859cdc', //Need to find out what this is
+        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/' + URI[5],
         type: 'GET',
         success: function(response) {
             var json = jQuery.parseJSON(response)
 
-            if(json["target"]) {
+            if(json == null) {
+                json = response
+            }
+
+            if(response.Error) {
+                alert(response.Error)
+            }
+            else if(json != null && json["target"]) {
                 var data = json;
-                var UUID = "abcdefgh";
+                var UUID = URI[5];
 
                 $("#organism").append(data["target"])
 
                 for (var k in data){
-                    url = "results/" + UUID + "/" + k //Need to check on this, don't think it is right
+                    url = "results/" + UUID + "/" + k
                     newRow = '<tr><td>' + k + '</td><td>' + data[k] + '</td><td><a href="' + url +'">' + url + '</a></td></tr>'
                     if(k != "target") {
                         $("#resultsTable").find("tbody").append(newRow)
                     }
                 }
                 $("#missingData").hide()
-
-                //window.location.href = "results/" + response["UUID"]; //Need to find out what this is as well
             }
             else {
-                alert("Something went wrong") //Need to make this better
+                alert("Something went wrong")
             }
         },
         error: function() {
-            alert("Something went wrong") //Need to make this better
+            alert("Something went wrong")
         }
     })
 

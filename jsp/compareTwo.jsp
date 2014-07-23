@@ -9,7 +9,7 @@
         google.load("jquery", "1.4.2");
     </script>
 
-    <script type="text/javascript" src="../js/compareTwo.js"></script>
+    <script type="text/javascript" src="/codonpdx/js/compareTwo.js"></script>
 
     <script type="text/javascript" src="http://www.amcharts.com/lib/3/amcharts.js"></script>
     <script type="text/javascript" src="http://www.amcharts.com/lib/3/serial.js"></script>
