@@ -29,7 +29,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Score</th>
+                <th class="sorttable_numeric">Score</th>
                 <th>1:1 Comparison</th>
             </tr>
         </thead>
