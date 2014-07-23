@@ -36,3 +36,12 @@ com_crashlytics_export_strings.xml
 *.jar
 *.war
 *.ear
+
+# Created by http://www.gitignore.io
+
+### Gradle ###
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
