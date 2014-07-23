@@ -5,91 +5,82 @@ var test = jQuery.parseJSON('{"NC_005816.1":{"Phe\/F":{"ttc":0.4295774647887324,
 
 $(document).ready(function() {
 
-    var data = test;
-    var chartValues = [];
+    $.ajax({
+        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/c8a12420d8974932b50b67dac9859cdc/NC_008432.1', //Need to find out what this is
+        type: 'GET',
+        success: function(response) {
+            var data = jQuery.parseJSON(response)
+            if(data["target"]) {
+                //var data = test;
+                var chartValues = [];
 
-    var idArray = [];
-    for(var id in data) {
-        idArray.push(id);
-    }
-    var id = idArray[0]
+                var idArray = [];
+                for(var id in data) {
+                    idArray.push(id);
+                }
+                var id = idArray[0]
 
-    for(var amino in data[id]) {
-        for(var triplet in data[id][amino]) {
-            if(amino != "description") {
-                chartValues.push(
-                    {"triplet": amino + " " + triplet,
-                        "amino": amino,
-                        "target": data[id][amino][triplet],
-                        "other": data[idArray[1]][amino][triplet]})
+                for(var amino in data[id]) {
+                    for(var triplet in data[id][amino]) {
+                        if(amino != "description") {
+                            chartValues.push(
+                                {"triplet": amino + " " + triplet,
+                                    "amino": amino,
+                                    "target": data[id][amino][triplet],
+                                    "other": data[idArray[1]][amino][triplet]})
+                        }
+                    }
+                }
+
+
+                var chart = AmCharts.makeChart("chartdiv", {
+                    "title": "title",
+                    "theme": "none",
+                    "type": "serial",
+                    "dataProvider": chartValues,
+                    "legend": {
+                        "markerType": "circle",
+                        "position": "top",
+                        "marginRight": 80,
+                        "autoMargins": false
+                    },
+                    "valueAxes": [{
+                        //"unit": "%",
+                        "position": "top",
+                        "title": "Ratio",
+                    }],
+                    "startDuration": 1,
+                    "graphs": [{
+                        "balloonText": "[[category]] : <b> [[value]]</b>",
+                        "fillAlphas": 0.9,
+                        "lineAlpha": 0.2,
+                        "title": idArray[0],
+                        "type": "column",
+                        "valueField": "target"
+                    }, {
+                        "balloonText": "[[category]] : <b>[[value]]</b>",
+                        "fillAlphas": 0.9,
+                        "lineAlpha": 0.2,
+                        "title": idArray[1],
+                        "type": "column",
+                        //"clustered":false,
+                        "columnWidth":0.5,
+                        "valueField": "other"
+                    }],
+                    "plotAreaFillAlphas": 0.1,
+                    "categoryField": "triplet",
+                    "rotate": true,
+                    "categoryAxis": {
+                        "gridPosition": "start"
+                    }
+                });
             }
-        }
-    }
-
-
-    var chart = AmCharts.makeChart("chartdiv", {
-        "title": "title",
-        "theme": "none",
-        "type": "serial",
-        "dataProvider": chartValues,
-        "legend": {
-            "markerType": "circle",
-            "position": "top",
-            "marginRight": 80,
-            "autoMargins": false
-        },
-        "valueAxes": [{
-            //"unit": "%",
-            "position": "top",
-            "title": "Ratio",
-        }],
-        "startDuration": 1,
-        "graphs": [{
-            "balloonText": "[[category]] : <b> [[value]]</b>",
-            "fillAlphas": 0.9,
-            "lineAlpha": 0.2,
-            "title": idArray[0],
-            "type": "column",
-            "valueField": "target"
-        }, {
-            "balloonText": "[[category]] : <b>[[value]]</b>",
-            "fillAlphas": 0.9,
-            "lineAlpha": 0.2,
-            "title": idArray[1],
-            "type": "column",
-            //"clustered":false,
-            "columnWidth":0.5,
-            "valueField": "other"
-        }],
-        "plotAreaFillAlphas": 0.1,
-        "categoryField": "triplet",
-        "rotate": true,
-        "categoryAxis": {
-            "gridPosition": "start"
-        }
-    });
-
-
-    /*var plot = $.jqplot('chart',
-        [array], {
-        seriesDefaults: {
-            renderer:$.jqplot.BarRenderer,
-            // Show point labels to the right ('e'ast) of each bar.
-            // edgeTolerance of -15 allows labels flow outside the grid
-            // up to 15 pixels.  If they flow out more than that, they
-            // will be hidden.
-            pointLabels: { show: true, location: 'e', edgeTolerance: -15 },
-            // Rotate the bar shadow as if bar is lit from top right.
-            shadowAngle: 135,
-            // Here's where we tell the chart it is oriented horizontally.
-            rendererOptions: {
-                barDirection: 'horizontal'
+            else {
+                alert("Something went wrong") //Need to make this better
             }
         },
-        axes: {
-            yaxis: {
-                renderer: $.jqplot.CategoryAxisRenderer
-            }
+        error: function() {
+            alert("Something went wrong") //Need to make this better
         }
-    });*/
+    })
 })

@@ -21,10 +21,10 @@ $(document).ready(function() {
         url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/c8a12420d8974932b50b67dac9859cdc', //Need to find out what this is
         type: 'GET',
         success: function(response) {
-            if(response["target"]) {
-                temp = response;
+            var json = jQuery.parseJSON(response)
 
-                var data = test;
+            if(json["target"]) {
+                var data = json;
                 var UUID = "abcdefgh";
 
                 $("#organism").append(data["target"])
