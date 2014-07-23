@@ -41,7 +41,6 @@ dependencies {
 
 war {
     from 'index.jsp'
-    from 'index.jsp'
     from 'form.html'
 
     from('css/') {
@@ -51,6 +50,11 @@ war {
     from('js/') {
         into('js')
     }
+
+    from('jsp/') {
+        into('jsp')
+    }
+
 
     archiveName = "codonpdx.war"
     webXml = file('web.xml')
