@@ -14,10 +14,11 @@ $(document).ready(function() {
                 json = response
             }
 
+            data = json
             if(response.Error) {
                 alert(response.Error)
             }
-            else if(json != null && json["target"]) {
+            else if(json != null && json[URI[6]]) {
                 var chartValues = [];
 
                 var idArray = [];
