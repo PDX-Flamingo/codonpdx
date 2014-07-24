@@ -35,7 +35,7 @@ public class CodonPDX extends HttpServlet{
             String[] URI = request.getRequestURI().split("/");
             switch (URI.length < 3 ? "none" : URI[2]) {
                 case "app":
-                    request.getRequestDispatcher("/jsp/homePage.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                     break;
                 case "testconnection":
                     testConnection(response);

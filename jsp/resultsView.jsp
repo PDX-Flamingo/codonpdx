@@ -25,7 +25,7 @@
     <h1 id="missingData">Waiting on the response...</h1>
     <h3 id="organism">Target organism: </h3>
 
-    <table class="sortable" id="resultsTable">
+    <table class="sortable" id="resultsTable" border="1">
         <thead>
             <tr>
                 <th>ID</th>
