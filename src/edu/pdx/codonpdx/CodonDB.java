@@ -1,6 +1,6 @@
 package edu.pdx.codonpdx;
 
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import java.sql.*;
 import java.util.HashSet;
@@ -229,6 +229,30 @@ public class CodonDB {
         return ratios;
     }
 
+    public class ResultObject {
+        public String id;
+        public String desc;
+        public String taxonomy;
+        public double score;
+        public double shuffle_score;
+    }
+
+    public static String toCSV(List<ResultObject> obj) {
+
+        StringBuilder sb = new StringBuilder();
+
+        // Header Information
+        sb.append("Accession, Description, Taxonomy, Score, Shuffle Score\n");
+
+        for (ResultObject r : obj)
+        {
+            String s = r.id + "," + r.desc + "," + r.taxonomy + "," + r.score + "," + r.shuffle_score + "\n";
+            sb.append(s);
+        }
+
+        return sb.toString();
+    }
+
     // class encompassing query strings
     private static class CodonDBQueryStrings {
         public static String getOrgsMatchingUUID = "(select organism2, score from results where job_uuid='%1$s' order by score asc limit %2$d) UNION (select organism2, score from results where job_uuid='%1$s' order by score desc limit %2$d) order by score asc";
@@ -237,5 +261,36 @@ public class CodonDB {
         public static String getOrganismForOneToOne = "select * from refseq where id='%1$s'";
         public static String getListOfAminoAcids = "select DISTINCT acid from codon_table";
         public static String getCodonsForAcid = "select codon from codon_table where acid='%1$s' and name='%2$s'";
+    }
+
+    public static void main(String[] args) {
+        JSONObject obj = new JSONObject("{\"menu\": {\n" +
+                "    \"header\": \"SVG Viewer\",\n" +
+                "    \"items\": [\n" +
+                "        {\"id\": \"Open\"},\n" +
+                "        {\"id\": \"OpenNew\", \"label\": \"Open New\"},\n" +
+                "        null,\n" +
+                "        {\"id\": \"ZoomIn\", \"label\": \"Zoom In\"},\n" +
+                "        {\"id\": \"ZoomOut\", \"label\": \"Zoom Out\"},\n" +
+                "        {\"id\": \"OriginalView\", \"label\": \"Original View\"},\n" +
+                "        null,\n" +
+                "        {\"id\": \"Quality\"},\n" +
+                "        {\"id\": \"Pause\"},\n" +
+                "        {\"id\": \"Mute\"},\n" +
+                "        null,\n" +
+                "        {\"id\": \"Find\", \"label\": \"Find...\"},\n" +
+                "        {\"id\": \"FindAgain\", \"label\": \"Find Again\"},\n" +
+                "        {\"id\": \"Copy\"},\n" +
+                "        {\"id\": \"CopyAgain\", \"label\": \"Copy Again\"},\n" +
+                "        {\"id\": \"CopySVG\", \"label\": \"Copy SVG\"},\n" +
+                "        {\"id\": \"ViewSVG\", \"label\": \"View SVG\"},\n" +
+                "        {\"id\": \"ViewSource\", \"label\": \"View Source\"},\n" +
+                "        {\"id\": \"SaveAs\", \"label\": \"Save As\"},\n" +
+                "        null,\n" +
+                "        {\"id\": \"Help\"},\n" +
+                "        {\"id\": \"About\", \"label\": \"About Adobe CVG Viewer...\"}\n" +
+                "    ]\n" +
+                "}}");
+
     }
 }
