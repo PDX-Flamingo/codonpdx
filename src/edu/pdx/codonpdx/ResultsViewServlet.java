@@ -24,11 +24,9 @@ public class ResultsViewServlet extends HttpServlet{
             switch (URI.length < 3 ? "none" : URI[2]) {
                 case "resultsView":
                     if(URI.length == 4) {
-                        out.println("one");
                         request.getRequestDispatcher("/resultsView.html").forward(request, response);
                     }
                     else if (URI.length == 5) {
-                        out.println("two");
                         request.getRequestDispatcher("/compareTwo.html").forward(request, response);
                     }
                     break;
