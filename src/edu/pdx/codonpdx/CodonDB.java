@@ -70,7 +70,7 @@ public class CodonDB {
             result.put("target", rs.getString(1));
         }
 
-        rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrgsMatchingUUID, UUID));
+        rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrgsMatchingUUID, UUID, 1000));
 
         while(rs.next()) {
             result.put(rs.getString(1), rs.getDouble(2));
@@ -104,7 +104,7 @@ public class CodonDB {
             rs.close();
 
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, comparisonOrganism));
-            result.put(comparisonOrganism, getCodonRatios("standrard", getCodonCounts(rs)));
+            result.put(comparisonOrganism, getCodonRatios("standard", getCodonCounts(rs)));
             rs.close();
         } catch (SQLException e) {
             JSONObject obj = new JSONObject();
@@ -231,7 +231,7 @@ public class CodonDB {
 
     // class encompassing query strings
     private static class CodonDBQueryStrings {
-        public static String getOrgsMatchingUUID = "select organism2, score from results where job_uuid='%1$s'";
+        public static String getOrgsMatchingUUID = "(select organism2, score from results where job_uuid='%1$s' order by score asc limit %2$d) UNION (select organism2, score from results where job_uuid='%1$s' order by score desc limit %2$d) order by score asc";
         public static String getTargetArgforUUID = "select organism1 from results where job_uuid='%1$s' limit 1";
         public static String getTargetForOneToOne = "select * from input where id='%1$s'";
         public static String getOrganismForOneToOne = "select * from refseq where id='%1$s'";

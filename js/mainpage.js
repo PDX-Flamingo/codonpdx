@@ -20,50 +20,50 @@ $(document).ready(function() {
 
 //Submit request to server
 function submitRequest() {
-  data = new FormData()
+    data = new FormData()
 
-  if(isUsingCustomList()) {
-    var customList = []
-    rows = $("#customList").find("tbody").children().children()
-    $.each(rows, function(index, value) {
-      var row = []
-      row.push($(value).find("#speciesInputType").val())
-      row.push($(value).find("#speciesInput").val())
-      customList.push(row)
+    if(isUsingCustomList()) {
+        var customList = []
+        rows = $("#customList").find("tbody").children().children()
+        $.each(rows, function(index, value) {
+            var row = []
+            row.push($(value).find("#speciesInputType").val())
+            row.push($(value).find("#speciesInput").val())
+            customList.push(row)
+        })
+        data.append('customList', customList)
+    }
+    else {
+        data.append('comparisonHost', $("#comparison").val())
+    }
+
+    if(isUploadingFile()) {
+        data.append('file', $("#sequenceFile")[0].files[0])
+        data.append('fileType', $("#fileType").val())
+    }
+    else {
+        data.append('sequenceName', $("#sequenceName").val())
+        data.append('sequenceText', $("#sequenceText").val())
+    }
+
+    $.ajax({
+        url: '/codonpdx/submitRequest', //Need to find out what this is
+        data: data,
+        processData: false,
+        contentType: false,
+        type: 'POST',
+        success: function(response) {
+            if(response["UUID"]) {
+                window.location.href = "resultsView/" + response["UUID"]; //Need to find out what this is as well
+            }
+            else {
+                alert("Something went wrong") //Need to make this better
+            }
+        },
+        error: function() {
+            alert("Something went wrong") //Need to make this better
+        }
     })
-    data.append('customList', customList)
-  }
-  else {
-    data.append('comparisonHost', $("#comparison").val())
-  }
-
-  if(isUploadingFile()) {
-    data.append('file', $("#sequenceFile")[0].files[0])
-    data.append('fileType', $("#fileType").val())
-  }
-  else {
-    data.append('sequenceName', $("#sequenceName").val())
-    data.append('sequenceText', $("#sequenceText").val())
-  }
-
-  $.ajax({
-      url: '/submitRequest', //Need to find out what this is
-      data: data,
-      processData: false,
-      contentType: false,
-      type: 'POST',
-      success: function(response) {
-        if(response["UUID"]) {
-          window.location.href = "results/" + response["UUID"]; //Need to find out what this is as well
-        }
-        else {
-          alert("Something went wrong") //Need to make this better
-        }
-      },
-      error: function() {
-          alert("Something went wrong") //Need to make this better
-      }
-  })
 }
 
 //Remove a row from the custom list
@@ -135,25 +135,24 @@ function isUploadingFile() {
 
 //Make sure that no fields that should not be empty are empty
 function validateFormsNotEmpty() {
-  valid = true
-  tabs = $(".simpleTabs").find("a")
-  if(isUploadingFile()) {
-    valid = valid && ($("#sequenceFile").val() != "")
-  }
-  else {
-    valid = valid && ($("#sequenceText").val() != "") && ($("#sequenceName").val() != "")
-  }
+    valid = true
+    tabs = $(".simpleTabs").find("a")
+    if(isUploadingFile()) {
+        valid = valid && ($("#sequenceFile").val() != "")
+    }
+    else {
+        valid = valid && ($("#sequenceText").val() != "") && ($("#sequenceName").val() != "")
+    }
 
-  if(isUsingCustomList()) {
-    rows = $("#customList").find("tbody").children().children()
-    $.each(rows, function(index, value) {
-      valid = valid && ($(value).find("#speciesInput").val() != "")
-    })
-  }
+    if(isUsingCustomList()) {
+        rows = $("#customList").find("tbody").children().children()
+        $.each(rows, function(index, value) {
+            valid = valid && ($(value).find("#speciesInput").val() != "")
+        })
+    }
 
-  if(valid)
-    $("#submitRequest").removeAttr("disabled")
-  else
-    $("#submitRequest").attr('disabled', 'disabled')
+    if(valid)
+        $("#submitRequest").removeAttr("disabled")
+    else
+        $("#submitRequest").attr('disabled', 'disabled')
 }
-
