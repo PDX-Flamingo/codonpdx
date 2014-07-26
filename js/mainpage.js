@@ -47,14 +47,14 @@ function submitRequest() {
     }
 
     $.ajax({
-        url: '/submitRequest', //Need to find out what this is
+        url: '/codonpdx/submitRequest', //Need to find out what this is
         data: data,
         processData: false,
         contentType: false,
         type: 'POST',
         success: function(response) {
             if(response["UUID"]) {
-                window.location.href = "results/" + response["UUID"]; //Need to find out what this is as well
+                window.location.href = "resultsView/" + response["UUID"]; //Need to find out what this is as well
             }
             else {
                 alert("Something went wrong") //Need to make this better

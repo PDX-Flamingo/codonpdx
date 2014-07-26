@@ -40,8 +40,9 @@ dependencies {
 }
 
 war {
-    from 'index.jsp'
-    from 'form.html'
+    from 'index.html'
+    from 'html/compareTwo.html'
+    from 'html/resultsView.html'
 
     from('css/') {
         into('css')
@@ -49,10 +50,6 @@ war {
 
     from('js/') {
         into('js')
-    }
-
-    from('jsp/') {
-        into('jsp')
     }
 
 

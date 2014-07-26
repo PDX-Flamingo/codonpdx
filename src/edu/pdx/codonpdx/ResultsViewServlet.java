@@ -25,11 +25,11 @@ public class ResultsViewServlet extends HttpServlet{
                 case "resultsView":
                     if(URI.length == 4) {
                         out.println("one");
-                        request.getRequestDispatcher("/jsp/resultsView.jsp").forward(request, response);
+                        request.getRequestDispatcher("/resultsView.html").forward(request, response);
                     }
                     else if (URI.length == 5) {
                         out.println("two");
-                        request.getRequestDispatcher("/jsp/compareTwo.jsp").forward(request, response);
+                        request.getRequestDispatcher("/compareTwo.html").forward(request, response);
                     }
                     break;
 

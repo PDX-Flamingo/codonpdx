@@ -35,21 +35,11 @@ public class CodonPDX extends HttpServlet{
             String[] URI = request.getRequestURI().split("/");
             switch (URI.length < 3 ? "none" : URI[2]) {
                 case "app":
-                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+                    request.getRequestDispatcher("/index.html").forward(request, response);
                     break;
                 case "testconnection":
                     testConnection(response);
                     break;
-
-                case "resultsView":
-                    if(URI.length == 4) {
-                        request.getRequestDispatcher("/jsp/resultsView.jsp").forward(request, response);
-                    }
-                    else if (URI.length == 5) {
-                        request.getRequestDispatcher("/jsp/compareTwo.jsp").forward(request, response);
-                    }
-                    break;
-
                 case "results":
                     if(URI.length == 4) {
                         out.print(getResultsOneToMany(URI[3]));
