@@ -108,7 +108,7 @@ public class CodonDB {
             rs.close();
         } catch (SQLException e) {
             JSONObject obj = new JSONObject();
-            obj.put("error", "ohshitz");
+            obj.put("error", e.getMessage());
             return obj;
         }
         return result;
