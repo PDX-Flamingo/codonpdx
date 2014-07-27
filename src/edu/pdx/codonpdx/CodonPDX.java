@@ -29,9 +29,6 @@ public class CodonPDX extends HttpServlet {
                 case "app":
                     request.getRequestDispatcher("/index.html").forward(request, response);
                     break;
-                case "testconnection":
-                    testConnection(response);
-                    break;
                 case "results":
                     if (URI.length == 4) {
                         out.print(getResultsOneToMany(URI[3]));
@@ -43,9 +40,8 @@ public class CodonPDX extends HttpServlet {
                         out.println("Error with request, check the URL again");
                     break;
                 default:
+                    request.getRequestDispatcher("/index.html").forward(request, response);
             }
-        } catch (InterruptedException e) {
-            out.println(e.getMessage());
         } catch (IOException e) {
             out.println(e.getMessage());
         }
@@ -86,29 +82,9 @@ public class CodonPDX extends HttpServlet {
         }
     }
 
-    private void testConnection(HttpServletResponse response) throws InterruptedException, IOException {
-        PrintWriter out = response.getWriter();
-        TaskScheduler ts = new TaskScheduler("celery", "localhost");
-        String id = ts.scheduleTask("codonpdx.tasks.random_int").replace("-", "");
-        Thread.sleep(4000);
-        ResponseConsumer qc = new ResponseConsumer(id, "localhost");
-        String message = qc.getResponseFromQueue();
-        int i = 0;
-        while (message == null) {
-            if (i == 5) break;
-            Thread.sleep(2000);
-            message = qc.getResponseFromQueue();
-            i++;
-        }
-        ts.closeConnect();
-        qc.closeConnect();
-
-        out.println(message);
-    }
-
     private void scheduleRatioCompare(String uuid, String database, String format) throws InterruptedException, IOException {
         try {
-            Configuration config = new PropertiesConfiguration("config/mq.properties");
+            Configuration config = new PropertiesConfiguration("mq.properties");
             TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"));
             String id = ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format);
             ts.closeConnect();
@@ -119,12 +95,13 @@ public class CodonPDX extends HttpServlet {
 
     private JSONObject getResultsOneToMany(String uuid) {
         try {
-            Configuration config = new PropertiesConfiguration("config/database.properties");
+            Configuration config = new PropertiesConfiguration("database.properties");
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
             JSONObject result = db.getResultOneToManysAsJSON(uuid);
             return result;
         } catch (Exception e) {
             JSONObject obj = new JSONObject();
+            obj.put("path", System.getProperty("user.dir"));
             obj.put("error", e.getMessage());
             return obj;
         }
@@ -133,7 +110,7 @@ public class CodonPDX extends HttpServlet {
 
     private JSONObject getResultsOneToOne(String uuid, String compareOrganism) {
         try {
-            Configuration config = new PropertiesConfiguration("config/database.properties");
+            Configuration config = new PropertiesConfiguration("database.properties");
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
             JSONObject result = db.getResultOneToOnesAsJSON(uuid, compareOrganism);
             return result;

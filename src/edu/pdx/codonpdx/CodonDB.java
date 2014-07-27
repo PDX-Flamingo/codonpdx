@@ -1,5 +1,6 @@
 package edu.pdx.codonpdx;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.sql.*;
@@ -49,17 +50,20 @@ public class CodonDB {
             sl.add(rs.getString(1) + rs.getString(2) + rs.getString(3) + rs.getString(4));
         }
         rs.close();
+        st.close();
         return sl;
     }
 
     public JSONObject getResultOneToManysAsJSON(String UUID) throws SQLException {
         if(con == null)  {
             JSONObject error = new JSONObject();
+            error.put("things", url + user + password);
             error.put("error", "connection not made");
             return error;
         }
         JSONObject result = new JSONObject();
 
+        // Check if this result exists
         st = con.createStatement();
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
@@ -73,9 +77,14 @@ public class CodonDB {
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrgsMatchingUUID, UUID, 1000));
 
         while(rs.next()) {
-            result.put(rs.getString(1), rs.getDouble(2));
+            JSONArray array = new JSONArray();
+            array.add(rs.getString(2));
+            array.add(rs.getDouble(3));
+            array.add(rs.getDouble(4));
+            result.put(rs.getString(1), array);
         }
         rs.close();
+        st.close();
         return result;
     }
 
@@ -90,6 +99,8 @@ public class CodonDB {
 
 
             st = con.createStatement();
+
+            // Query the results table to see if this result exists.
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
             if (!rs.next()) {
@@ -99,13 +110,14 @@ public class CodonDB {
             String target = rs.getString(1);
             rs.close();
 
-            rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetForOneToOne, target));
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "input", target));
             result.put(target, getCodonRatios("standard", getCodonCounts(rs)));
             rs.close();
 
-            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, comparisonOrganism));
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "refseq", comparisonOrganism));
             result.put(comparisonOrganism, getCodonRatios("standard", getCodonCounts(rs)));
             rs.close();
+            st.close();
         } catch (SQLException e) {
             JSONObject obj = new JSONObject();
             obj.put("error", e.getMessage());
@@ -216,6 +228,7 @@ public class CodonDB {
 
                 ratios.put(s, aminoacidJSON);
                 rs.close();
+                st.close();
             }
         } catch (Exception e) {
             JSONObject error = new JSONObject();
@@ -231,10 +244,12 @@ public class CodonDB {
 
     // class encompassing query strings
     private static class CodonDBQueryStrings {
-        public static String getOrgsMatchingUUID = "(select organism2, score from results where job_uuid='%1$s' order by score asc limit %2$d) UNION (select organism2, score from results where job_uuid='%1$s' order by score desc limit %2$d) order by score asc";
-        public static String getTargetArgforUUID = "select organism1 from results where job_uuid='%1$s' limit 1";
-        public static String getTargetForOneToOne = "select * from input where id='%1$s'";
-        public static String getOrganismForOneToOne = "select * from refseq where id='%1$s'";
+        public static String getOrgsMatchingUUID = "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score asc limit %2$d)"
+                                                 + " UNION "
+                                                 + "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score desc limit %2$d)"
+                                                 + "order by score asc";
+        public static String getTargetArgforUUID = "select job_uuid from results where job_uuid='%1$s' limit 1";
+        public static String getOrganismForOneToOne = "select * from %1$s where id='%2$s'";
         public static String getListOfAminoAcids = "select DISTINCT acid from codon_table";
         public static String getCodonsForAcid = "select codon from codon_table where acid='%1$s' and name='%2$s'";
     }
