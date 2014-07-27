@@ -84,7 +84,7 @@ public class CodonPDX extends HttpServlet {
 
     private void scheduleRatioCompare(String uuid, String database, String format) throws InterruptedException, IOException {
         try {
-            Configuration config = new PropertiesConfiguration("mq.properties");
+            Configuration config = new PropertiesConfiguration("sample-mq.properties");
             TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"));
             String id = ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format);
             ts.closeConnect();
@@ -95,7 +95,7 @@ public class CodonPDX extends HttpServlet {
 
     private JSONObject getResultsOneToMany(String uuid) {
         try {
-            Configuration config = new PropertiesConfiguration("database.properties");
+            Configuration config = new PropertiesConfiguration("sample-database.properties");
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
             JSONObject result = db.getResultOneToManysAsJSON(uuid);
             return result;
@@ -110,7 +110,7 @@ public class CodonPDX extends HttpServlet {
 
     private JSONObject getResultsOneToOne(String uuid, String compareOrganism) {
         try {
-            Configuration config = new PropertiesConfiguration("database.properties");
+            Configuration config = new PropertiesConfiguration("sample-database.properties");
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
             JSONObject result = db.getResultOneToOnesAsJSON(uuid, compareOrganism);
             return result;
