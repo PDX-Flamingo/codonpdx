@@ -212,7 +212,7 @@ public class CodonDB {
             rs.close();
             for (String s : aminoacidSet) {
                 JSONObject aminoacidJSON = new JSONObject();
-                rs = st.executeQuery(String.format(CodonDBQueryStrings.getCodonsForAcid, s, "standard"));
+                rs = st.executeQuery(String.format(CodonDBQueryStrings.getCodonsForAcid, s, table));
                 int count = 0;
                 Set<String> codonSet = new HashSet<>();
                 while (rs.next()) {
@@ -228,7 +228,6 @@ public class CodonDB {
 
                 ratios.put(s, aminoacidJSON);
                 rs.close();
-                st.close();
             }
         } catch (Exception e) {
             JSONObject error = new JSONObject();

@@ -52,17 +52,15 @@ public class CodonPDX extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            PrintWriter out = response.getWriter();
+            out = response.getWriter();
             String uuid = UUID.randomUUID().toString().replace("-", "");
             switch (request.getRequestURI()) {
                 case "/codonpdx/submitRequest":
                     ParseResponse prbody = new ParseResponse(request.getReader());
                     prbody.parseInput();
-
                     File f = new File("/opt/share/", uuid);
                     Writer fileWriter = new FileWriter(f);
                     BufferedWriter bw = new BufferedWriter(fileWriter);
-
                     bw.write(prbody.fileContents);
                     bw.close();
                     fileWriter.close();
@@ -75,18 +73,17 @@ public class CodonPDX extends HttpServlet {
                     break;
             }
         } catch (IOException e) {
-            PrintWriter out = response.getWriter();
-            out.println(e.getMessage());
+            e.printStackTrace(out);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            e.printStackTrace(out);
         }
     }
 
     private void scheduleRatioCompare(String uuid, String database, String format) throws InterruptedException, IOException {
         try {
-            Configuration config = new PropertiesConfiguration("sample-mq.properties");
+            Configuration config = new PropertiesConfiguration("mq.properties");
             TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"));
-            String id = ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format);
+            ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format);
             ts.closeConnect();
         } catch (org.apache.commons.configuration.ConfigurationException e) {
             out.println(e.getMessage());
@@ -95,7 +92,7 @@ public class CodonPDX extends HttpServlet {
 
     private JSONObject getResultsOneToMany(String uuid) {
         try {
-            Configuration config = new PropertiesConfiguration("sample-database.properties");
+            Configuration config = new PropertiesConfiguration("database.properties");
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
             JSONObject result = db.getResultOneToManysAsJSON(uuid);
             return result;
@@ -110,7 +107,7 @@ public class CodonPDX extends HttpServlet {
 
     private JSONObject getResultsOneToOne(String uuid, String compareOrganism) {
         try {
-            Configuration config = new PropertiesConfiguration("sample-database.properties");
+            Configuration config = new PropertiesConfiguration("database.properties");
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
             JSONObject result = db.getResultOneToOnesAsJSON(uuid, compareOrganism);
             return result;

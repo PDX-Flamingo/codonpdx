@@ -25,10 +25,9 @@ public class TaskScheduler extends QueueObject {
         openConnect();
     }
 
-    public String scheduleTask(String id, String task, String file, String database, String format) throws IOException {
+    public void scheduleTask(String id, String task, String file, String database, String format) throws IOException {
         if(!this.connectToQueue()) {
             System.out.println("Could not connect to queue to write");
-            return null;
         }
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);  // Some of this should be moved to separate methods
@@ -36,7 +35,6 @@ public class TaskScheduler extends QueueObject {
         String message = formatter.format(startJob, "\"" + id + "\"", "\"/opt/share/" + file + "\"", database.toLowerCase(), format.toLowerCase(), taskList, id, task).toString();
         channel.basicPublish(QUEUE_NAME, QUEUE_NAME, properties, message.getBytes("ASCII"));
         System.out.println(" Sent : " + message);
-        return id;
     }
 
 }
