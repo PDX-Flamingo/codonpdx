@@ -25,23 +25,6 @@ public class TaskScheduler extends QueueObject {
         openConnect();
     }
 
-    // Schedule a task with a random UUID for the id.  id is returned
-    // so that the results of the message can be retrieved if needed
-    public String scheduleTask(String task) throws IOException {
-        if(!this.connectToQueue()) {
-            System.out.println("Could not connect to queue to write");
-            return null;
-        }
-        StringBuilder sb = new StringBuilder();
-        Formatter formatter = new Formatter(sb, Locale.US);  // Some of this should be moved to separate methods
-        String taskList = UUID.randomUUID().toString();  // find out if taskList is even needed
-        String id = UUID.randomUUID().toString();  // Need to
-        String message = formatter.format(testString, 5, taskList, id, task).toString();
-        channel.basicPublish(QUEUE_NAME, QUEUE_NAME, properties, message.getBytes("ASCII"));
-        System.out.println(" Sent : " + message);
-        return id;
-    }
-
     public String scheduleTask(String id, String task, String file, String database, String format) throws IOException {
         if(!this.connectToQueue()) {
             System.out.println("Could not connect to queue to write");

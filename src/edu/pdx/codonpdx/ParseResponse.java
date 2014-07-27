@@ -1,6 +1,5 @@
 package edu.pdx.codonpdx;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +7,12 @@ import java.util.List;
 
 /**
  * Created by Robert on 7/17/2014.
+ *
+ * This class was created to parse the response payload from our POSTs.
+ * Due to issues with trying to extract the data through a standard way,
+ * this class was created as a hackish solution in order to move forward.
+ * Ideally this class will be replaced by using the http servlets standard
+ * methods of extracting payloads.
  */
 public class ParseResponse {
 
@@ -61,7 +66,7 @@ public class ParseResponse {
             }
             if(postElements[i].contains("name=\"file\"")) {
                 i=i+3;
-                for(;!postElements[i].contains("------");i++) {
+                for(;!postElements[i].startsWith("------");i++) {
                     fileContents += postElements[i] + "\n";
                 }
                 continue;

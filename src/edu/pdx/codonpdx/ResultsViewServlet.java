@@ -1,16 +1,17 @@
 package edu.pdx.codonpdx;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 import java.io.*;
 
 /**
  * Created by Robert on 7/7/2014.
+ *
+ * This servlet handles mapping URLs for viewing results to html files.  The html files
+ * use javascript that parse the URL.
  */
 
 public class ResultsViewServlet extends HttpServlet{
