@@ -21,7 +21,7 @@
         </init-param>
         <init-param>
             <param-name>serverName</param-name>
-            <param-value>http://capstone.cs.pdx.edu:8080</param-value>
+            <param-value>http://capstonebb.cs.pdx.edu:8080</param-value>
         </init-param>
         <init-param>
             <param-name>renew</param-name>
@@ -42,11 +42,11 @@
         </init-param>
         <init-param>
             <param-name>serverName</param-name>
-            <param-value>http://capstone.cs.pdx.edu:8080</param-value>
+            <param-value>http://capstonebb.cs.pdx.edu:8080</param-value>
         </init-param>
         <init-param>
             <param-name>proxyCallbackUrl</param-name>
-            <param-value>http://capstone.cs.pdx.edu:8080/webappcas2/proxyCallback</param-value>
+            <param-value>http://capstonebb.cs.pdx.edu:8080/webappcas2/proxyCallback</param-value>
         </init-param>
         <init-param>
             <param-name>proxyReceptorUrl</param-name>
