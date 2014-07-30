@@ -39,7 +39,7 @@ $(document).ready(function() {
 
                 for (var k in data){
                     url = window.location.href + "/" + k
-                    newRow = '<tr><td><a href="' + url +'">' + k + '</a></td><td>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][0] + '</td></tr>'
+                    newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][0] + '</td></tr>'
                     if(k != "target") {
                         $("#resultsTable").find("tbody").append(newRow)
                     }
