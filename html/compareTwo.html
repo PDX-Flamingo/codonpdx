@@ -9,6 +9,7 @@
         google.load("jquery", "1.4.2");
     </script>
 
+    <script type= "text/javascript" src="/codonpdx/js/sorttable.js"></script>
     <script type="text/javascript" src="/codonpdx/js/compareTwo.js"></script>
 
     <script type="text/javascript" src="http://www.amcharts.com/lib/3/amcharts.js"></script>
@@ -22,8 +23,30 @@
             font-size	: 11px;
         }
     </style>
+
+    <style>
+        table.sortable thead {
+            background-color:#eee;
+            color:#666666;
+            font-weight: bold;
+            cursor: default;
+        }
+    </style>
 </head>
 <body>
     <div id="chartdiv"></div>
+
+    <table id="table" class="sortable" border="1">
+        <thead>
+        <tr>
+            <th id="triplet"></th>
+            <th class ="sorttable_numeric" id="first"></th>
+            <th class="sorttable_numeric" id="second"></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        </tbody>
+    </table>
 </body>
 </html>
