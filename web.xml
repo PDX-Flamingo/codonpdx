@@ -20,6 +20,11 @@
         <servlet-class>edu.pdx.codonpdx.ResultsViewServlet</servlet-class>
     </servlet>
 
+    <!--<servlet>-->
+        <!--<servlet-name>DownloadCSVServlet</servlet-name>-->
+        <!--<servlet-class>edu.pdx.codonpdx.DownloadCSVServlet</servlet-class>-->
+    <!--</servlet>-->
+
     <servlet-mapping>
         <servlet-name>CodonPDX</servlet-name>
         <url-pattern>/app/*</url-pattern>
@@ -28,16 +33,6 @@
     <servlet-mapping>
         <servlet-name>CodonPDX</servlet-name>
         <url-pattern>/results/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>CodonPDX</servlet-name>
-        <url-pattern>/testconnection/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>CodonPDX</servlet-name>
-        <url-pattern>/submit_job/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -53,6 +48,11 @@
     <servlet-mapping>
         <servlet-name>ResultsViewServlet</servlet-name>
         <url-pattern>/resultsView/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CodonPDX</servlet-name>
+        <url-pattern>/dlCSV/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

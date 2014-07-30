@@ -15,6 +15,7 @@ sourceSets {
         resources {
             srcDir 'css/'
             srcDir 'js/'
+            srcDir 'config/'
         }
     }
 }
@@ -51,6 +52,10 @@ war {
     from('js/') {
         into('js')
     }
+
+    from'config/'
+
+
 
 
     archiveName = "codonpdx.war"

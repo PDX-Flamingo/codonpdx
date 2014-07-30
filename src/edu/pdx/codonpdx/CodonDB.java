@@ -1,6 +1,6 @@
 package edu.pdx.codonpdx;
 
-import org.json.JSONObject;
+import org.json.*;
 
 import java.sql.*;
 import java.util.*;
@@ -46,17 +46,20 @@ public class CodonDB {
             sl.add(rs.getString(1) + rs.getString(2) + rs.getString(3) + rs.getString(4));
         }
         rs.close();
+        st.close();
         return sl;
     }
 
     public JSONObject getResultOneToManysAsJSON(String UUID) throws SQLException {
         if(con == null)  {
             JSONObject error = new JSONObject();
+            error.put("things", url + user + password);
             error.put("error", "connection not made");
             return error;
         }
         JSONObject result = new JSONObject();
 
+        // Check if this result exists
         st = con.createStatement();
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
@@ -70,9 +73,14 @@ public class CodonDB {
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrgsMatchingUUID, UUID, 1000));
 
         while(rs.next()) {
-            result.put(rs.getString(1), rs.getDouble(2));
+            JSONArray array = new JSONArray();
+            array.put(rs.getString(2));
+            array.put(rs.getDouble(3));
+            array.put(rs.getDouble(4));
+            result.put(rs.getString(1), array);
         }
         rs.close();
+        st.close();
         return result;
     }
 
@@ -87,6 +95,8 @@ public class CodonDB {
 
 
             st = con.createStatement();
+
+            // Query the results table to see if this result exists.
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
             if (!rs.next()) {
@@ -96,16 +106,17 @@ public class CodonDB {
             String target = rs.getString(1);
             rs.close();
 
-            rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetForOneToOne, target));
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "input", target));
             result.put(target, getCodonRatios("standard", getCodonCounts(rs)));
             rs.close();
 
-            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, comparisonOrganism));
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "refseq", comparisonOrganism));
             result.put(comparisonOrganism, getCodonRatios("standard", getCodonCounts(rs)));
             rs.close();
+            st.close();
         } catch (SQLException e) {
             JSONObject obj = new JSONObject();
-            obj.put("error", "ohshitz");
+            obj.put("error", e.getMessage());
             return obj;
         }
         return result;
@@ -197,7 +208,7 @@ public class CodonDB {
             rs.close();
             for (String s : aminoacidSet) {
                 JSONObject aminoacidJSON = new JSONObject();
-                rs = st.executeQuery(String.format(CodonDBQueryStrings.getCodonsForAcid, s, "standard"));
+                rs = st.executeQuery(String.format(CodonDBQueryStrings.getCodonsForAcid, s, table));
                 int count = 0;
                 Set<String> codonSet = new HashSet<>();
                 while (rs.next()) {
@@ -231,6 +242,7 @@ public class CodonDB {
         List<CSVResultObject> obj = new ArrayList<CSVResultObject>();
 
         try {
+            st = con.createStatement();
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getInformationForCSVLine, seqDatabase, jobUUID));
 
             while (rs.next())
@@ -272,44 +284,14 @@ public class CodonDB {
 
     // class encompassing query strings
     private static class CodonDBQueryStrings {
-
         public static String getInformationForCSVLine = "select id, taxonomy, description, score, shuffle_score from %1$s as rs inner join results as r on r.organism2 = rs.id where job_uuid='%2$s'";
-        public static String getOrgsMatchingUUID = "(select organism2, score from results where job_uuid='%1$s' order by score asc limit %2$d) UNION (select organism2, score from results where job_uuid='%1$s' order by score desc limit %2$d) order by score asc";
-        public static String getTargetArgforUUID = "select organism1 from results where job_uuid='%1$s' limit 1";
-        public static String getTargetForOneToOne = "select * from input where id='%1$s'";
-        public static String getOrganismForOneToOne = "select * from refseq where id='%1$s'";
+        public static String getOrgsMatchingUUID = "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score asc limit %2$d)"
+                                                 + " UNION "
+                                                 + "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score desc limit %2$d)"
+                                                 + "order by score asc";
+        public static String getTargetArgforUUID = "select job_uuid from results where job_uuid='%1$s' limit 1";
+        public static String getOrganismForOneToOne = "select * from %1$s where id='%2$s'";
         public static String getListOfAminoAcids = "select DISTINCT acid from codon_table";
         public static String getCodonsForAcid = "select codon from codon_table where acid='%1$s' and name='%2$s'";
-    }
-
-    public static void main(String[] args) {
-        JSONObject obj = new JSONObject("{\"menu\": {\n" +
-                "    \"header\": \"SVG Viewer\",\n" +
-                "    \"items\": [\n" +
-                "        {\"id\": \"Open\"},\n" +
-                "        {\"id\": \"OpenNew\", \"label\": \"Open New\"},\n" +
-                "        null,\n" +
-                "        {\"id\": \"ZoomIn\", \"label\": \"Zoom In\"},\n" +
-                "        {\"id\": \"ZoomOut\", \"label\": \"Zoom Out\"},\n" +
-                "        {\"id\": \"OriginalView\", \"label\": \"Original View\"},\n" +
-                "        null,\n" +
-                "        {\"id\": \"Quality\"},\n" +
-                "        {\"id\": \"Pause\"},\n" +
-                "        {\"id\": \"Mute\"},\n" +
-                "        null,\n" +
-                "        {\"id\": \"Find\", \"label\": \"Find...\"},\n" +
-                "        {\"id\": \"FindAgain\", \"label\": \"Find Again\"},\n" +
-                "        {\"id\": \"Copy\"},\n" +
-                "        {\"id\": \"CopyAgain\", \"label\": \"Copy Again\"},\n" +
-                "        {\"id\": \"CopySVG\", \"label\": \"Copy SVG\"},\n" +
-                "        {\"id\": \"ViewSVG\", \"label\": \"View SVG\"},\n" +
-                "        {\"id\": \"ViewSource\", \"label\": \"View Source\"},\n" +
-                "        {\"id\": \"SaveAs\", \"label\": \"Save As\"},\n" +
-                "        null,\n" +
-                "        {\"id\": \"Help\"},\n" +
-                "        {\"id\": \"About\", \"label\": \"About Adobe CVG Viewer...\"}\n" +
-                "    ]\n" +
-                "}}");
-
     }
 }
