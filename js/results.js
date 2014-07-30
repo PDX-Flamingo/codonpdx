@@ -44,6 +44,9 @@ $(document).ready(function() {
                         $("#resultsTable").find("tbody").append(newRow)
                     }
                 }
+                var csvUrl = window.location.href.substring(0,window.location.href.indexOf("resultsView")) + "dlCSV/" + URI[5]
+                $("#csv").append('<a href="' + csvUrl + '">Download the results</a>')
+                $("#csv").show();
                 $("#missingData").hide()
             }
             else {
