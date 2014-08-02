@@ -26,6 +26,9 @@ $(document).ready(function() {
                     idArray.push(id);
                 }
                 var id = idArray[0]
+                $("#first").append(idArray[0])
+                $("#second").append(idArray[1])
+                var table = $("#table").find("tbody")
 
                 for(var amino in data[id]) {
                     for(var triplet in data[id][amino]) {
@@ -35,6 +38,7 @@ $(document).ready(function() {
                                     "amino": amino,
                                     "target": data[id][amino][triplet],
                                     "other": data[idArray[1]][amino][triplet]})
+                            table.append('<tr><td>' + amino + " " + triplet + '</td><td>' + data[id][amino][triplet] + '</td><td>' + data[idArray[1]][amino][triplet] + '</td></tr>')
                         }
                     }
                 }
