@@ -46,7 +46,10 @@ public class DownloadCSV extends HttpServlet {
 
         for (CodonDB.CSVResultObject r : obj)
         {
-            String s = r.id + "," + r.desc + "," + r.taxonomy + "," + r.score + "," + r.shuffle_score + "\n";
+            r.desc = r.desc.replace("\"", "\'");
+            r.taxonomy = r.taxonomy.replace("\"", "\'");
+
+            String s = r.id + "," + "\"" + r.desc + "\"" + "," + "\"" + r.taxonomy + "\"" + "," + r.score + "," + r.shuffle_score + "\n";
             sb.append(s);
         }
 

@@ -14,6 +14,7 @@ $(document).ready(function() {
   $("#customList").find("#add").click(addToCustomList)
   $("#customList").find("#add").click(validateCustomListButtons)
   $("#submitRequest").click(submitRequest)
+  $("#speciesInput").bind('change', autoCompleteText)
   validateFormsNotEmpty()
   bindValidate()
 });
@@ -27,7 +28,6 @@ function submitRequest() {
         rows = $("#customList").find("tbody").children().children()
         $.each(rows, function(index, value) {
             var row = []
-            row.push($(value).find("#speciesInputType").val())
             row.push($(value).find("#speciesInput").val())
             customList.push(row)
         })
@@ -87,11 +87,6 @@ function validateCustomListButtons() {
 //Add something to the custom list and bind buttons
 function addToCustomList() {
   newRow = '<tr><td>Species:<input type="text" id="speciesInput"/>\
-             Input Type:\
-             <select id="speciesInputType">\
-               <option value="Organism Name">Organism Name</option>\
-               <option value="Taxonomy Id">Taxonomy Id</option>\
-             </select>\
              <button type="button" id="add">Add New Row</button>\
              <button type="button" id="remove">Remove</button></td></tr>'
   $(this).hide()
@@ -111,16 +106,17 @@ function addToCustomList() {
 function bindValidate() {
   $("#remove").click(validateFormsNotEmpty)
   $("#add").click(validateFormsNotEmpty)
-  $("#sequenceName").bind("change keyup input paste", validateFormsNotEmpty)
-  $("#sequenceText").bind("change keyup input paste", validateFormsNotEmpty)
-  $("#sequenceFile").bind("change keyup input paste", validateFormsNotEmpty)
-  $("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
+  $("#sequenceName").bind('change', validateFormsNotEmpty)
+  $("#sequenceText").bind('change', validateFormsNotEmpty)
+  $("#sequenceFile").bind('change', validateFormsNotEmpty)
+  $("#speciesInput").bind('change', validateFormsNotEmpty)
   rows = $("#customList").find("tbody").children().children()
   $.each(rows, function(index, value) {
-    $(value).find("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
+    $(value).find("#speciesInput").bind('change', validateFormsNotEmpty)
+      $(value).find("#speciesInput").bind('change', autoCompleteText)
   })
-  $("#comparison").bind("change keyup input paste", validateFormsNotEmpty)
-  $(".simpleTabsNavigation").bind("click change keyup input paste",validateFormsNotEmpty)
+  $("#comparison").bind('change', validateFormsNotEmpty)
+  $(".simpleTabsNavigation").bind('change',validateFormsNotEmpty)
 }
 
 //Returns true if custom list is selected
@@ -155,4 +151,25 @@ function validateFormsNotEmpty() {
         $("#submitRequest").removeAttr("disabled")
     else
         $("#submitRequest").attr('disabled', 'disabled')
+}
+
+function autoCompleteText() {
+    $.ajax({
+        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/list/' + $(this).val(),
+        context: this,
+        type: 'GET',
+        success: function(response) {
+            if(response) {
+                $( this ).autocomplete({
+                    source: response.list
+                });
+            }
+            else {
+                alert("Something went wrong") //Need to make this better
+            }
+        },
+        error: function() {
+            alert("Something went wrong") //Need to make this better
+        }
+    })
 }
