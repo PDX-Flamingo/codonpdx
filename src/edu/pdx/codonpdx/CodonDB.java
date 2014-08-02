@@ -196,6 +196,32 @@ public class CodonDB {
         return entry;
     }
 
+    public JSONObject getOrganismListAsJSON(String organism) {
+        JSONObject list = new JSONObject();
+        JSONArray array = new JSONArray();
+        try {
+            st = con.createStatement();
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismIdListQuery, organism));
+            while(rs.next()) {
+                JSONArray innerArray = new JSONArray();
+                innerArray.put(rs.getString(1));
+                innerArray.put(rs.getString(2));
+                array.put(innerArray);
+            }
+            list.put("list", array);
+            rs.close();
+            st.close();
+            con.close();
+        } catch (SQLException e) {
+            JSONObject error = new JSONObject();
+            error.put("error", "Error trying to get list of organisms");
+            return error;
+        }
+
+        return list;
+    }
+
+
     private JSONObject getCodonRatios(String table, JSONObject counts) {
         JSONObject ratios = new JSONObject();
         try {
@@ -293,5 +319,6 @@ public class CodonDB {
         public static String getOrganismForOneToOne = "select * from %1$s where id='%2$s'";
         public static String getListOfAminoAcids = "select DISTINCT acid from codon_table";
         public static String getCodonsForAcid = "select codon from codon_table where acid='%1$s' and name='%2$s'";
+        public static String getOrganismIdListQuery = "select id, description from refseq where id like '%1$s%%' or description like '%1$s%%' limit 10";
     }
 }

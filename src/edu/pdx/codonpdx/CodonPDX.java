@@ -39,16 +39,30 @@ public class CodonPDX extends HttpServlet {
                     } else if (URI.length == 5) {
                         out.print(getResultsOneToOne(URI[3], URI[4]));
                         response.setContentType("application/json");
-                        response.setHeader("filename", URI[3] + ".csv");
-                        response.setHeader("Content-Disposition", "attachment; filename=\"" + URI[3] + ".csv" + "\"");
                     } else
                         out.println("Error with request, check the URL again");
                     break;
                 case "dlCSV":
-                    if (URI.length == 4)
+                    if (URI.length == 4) {
                         response.setContentType("text/csv");
+                        response.setHeader("filename", URI[3] + ".csv");
+                        response.setHeader("Content-Disposition", "attachment; filename=\"" + URI[3] + ".csv" + "\"");
                         out.println(getCSVString(URI[3]));
+                    }
+                    else {
+                        out.println("Error with request, check the URL again");
+                    }
                     break;
+                case "list":
+                    if (URI.length == 4) {
+                        response.setContentType("application/json");
+                        out.println(getOrganismList(URI[3]));
+                    }
+                    else {
+                        out.println("Error with request, check the URL again");
+                    }
+                    break;
+
                 default:
                     request.getRequestDispatcher("/index.html").forward(request, response);
             }
@@ -113,6 +127,19 @@ public class CodonPDX extends HttpServlet {
             return obj;
         }
 
+    }
+
+    private JSONObject getOrganismList(String organism) {
+        try {
+            Configuration config = new PropertiesConfiguration("database.properties");
+            CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
+            JSONObject result = db.getOrganismListAsJSON(organism);
+            return result;
+        } catch (org.apache.commons.configuration.ConfigurationException e) {
+            JSONObject obj = new JSONObject();
+            obj.put("error", e.getMessage());
+            return obj;
+        }
     }
 
     private JSONObject getResultsOneToOne(String uuid, String compareOrganism) {
