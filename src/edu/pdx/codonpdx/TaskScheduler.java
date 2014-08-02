@@ -32,7 +32,7 @@ public class TaskScheduler extends QueueObject {
     // so that the results of the message can be retrieved if needed
 
 
-    public String scheduleTask(String id, String task, String file, String database, String format) throws IOException {
+    public String scheduleTask(String id, String task, String file, String database, String format, String path) throws IOException {
         if(!this.connectToQueue()) {
             System.out.println("Could not connect to queue to write");
             return null;
@@ -40,7 +40,7 @@ public class TaskScheduler extends QueueObject {
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);  // Some of this should be moved to separate methods
         String taskList = UUID.randomUUID().toString();  // find out if taskList is even needed
-        String message = formatter.format(startJob, "\"" + id + "\"", "\"/opt/share/" + file + "\"", database.toLowerCase(), format.toLowerCase(), taskList, id, task).toString();
+        String message = formatter.format(startJob, "\"" + id + "\"", "\"" + path + file + "\"", database.toLowerCase(), format.toLowerCase(), taskList, id, task).toString();
         channel.basicPublish(QUEUE_NAME, QUEUE_NAME, properties, message.getBytes("ASCII"));
         System.out.println(" Sent : " + message);
         return id;

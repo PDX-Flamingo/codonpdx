@@ -16,13 +16,14 @@ public class CodonDB {
     String user = null;
     String password = null;
     Boolean connection = false;
-    SQLException sql = null;
+    Boolean useSSL = false;
 
 
-    public CodonDB(String url, String user, String password) {
+    public CodonDB(String url, String user, String password, Boolean SSL) {
         this.url = url;
         this.user = user;
         this.password = password;
+        this.useSSL = SSL;
         connection = openConnection();
     }
 
@@ -32,13 +33,13 @@ public class CodonDB {
             Properties properties = new Properties();
             properties.setProperty("user", user);
             properties.setProperty("password", password);
-            properties.setProperty("ssl", "true");
+            if(useSSL)
+                properties.setProperty("ssl", "true");
             properties.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
             con = DriverManager.getConnection(url, properties);
         }
         catch(SQLException sqle) {
             System.out.println(sqle.getMessage());
-            sql = sqle;
             return false;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -210,11 +211,11 @@ public class CodonDB {
         JSONArray array = new JSONArray();
         try {
             st = con.createStatement();
-            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismIdListQuery, organism));
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismIdListQuery, organism.toLowerCase()));
             while(rs.next()) {
-                if(rs.getString(1).startsWith(organism))
+                if(rs.getString(1).toLowerCase().startsWith(organism.toLowerCase()))
                     array.put(rs.getString(1));
-                if(rs.getString(2).startsWith(organism))
+                if(rs.getString(2).toLowerCase().startsWith(organism.toLowerCase()))
                     array.put(rs.getString(2));
             }
             list.put("list", array);
@@ -328,6 +329,6 @@ public class CodonDB {
         public static String getOrganismForOneToOne = "select * from %1$s where id='%2$s'";
         public static String getListOfAminoAcids = "select DISTINCT acid from codon_table";
         public static String getCodonsForAcid = "select codon from codon_table where acid='%1$s' and name='%2$s'";
-        public static String getOrganismIdListQuery = "select id, description from refseq where id like '%1$s%%' or description like '%1$s%%' limit 10";
+        public static String getOrganismIdListQuery = "select id, description from refseq where lower(id) like '%1$s%%' or lower(description) like '%1$s%%' limit 10";
     }
 }
