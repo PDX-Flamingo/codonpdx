@@ -5,8 +5,10 @@
   <title>Sequence Input</title>
   
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
   <script type="text/javascript">
-    google.load("jquery", "1.4.2");
+    google.load("jquery", "1.4.3");
+    google.load("jqueryui", "1.8.0")
   </script>
   <script type="text/javascript" src="js/simpletabs_1.3.js"></script>
   <style type="text/css">
@@ -50,15 +52,10 @@
           <tr>
             <td>
 	          Species:<input type="text" id="speciesInput"/>
-              Input Type:
-	          <select id="speciesInputType">
-                <option value="Organism Name">Organism Name</option>
-	            <option value="Taxonomy Id">Taxonomy Id</option>
-              </select>
               <button type="button" id="add">Add New Row</button>
               <button type="button" id="remove" style="display:none">Remove</button>
             </td>
-          </tr>  
+          </tr>
         </tbody>
       </table>
     </div>
