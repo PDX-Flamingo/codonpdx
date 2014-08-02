@@ -1,15 +1,18 @@
 package edu.pdx.codonpdx;
 
+import javax.naming.ConfigurationException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.json.simple.JSONObject;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -36,8 +39,15 @@ public class CodonPDX extends HttpServlet {
                     } else if (URI.length == 5) {
                         out.print(getResultsOneToOne(URI[3], URI[4]));
                         response.setContentType("application/json");
+                        response.setHeader("filename", URI[3] + ".csv");
+                        response.setHeader("Content-Disposition", "attachment; filename=\"" + URI[3] + ".csv" + "\"");
                     } else
                         out.println("Error with request, check the URL again");
+                    break;
+                case "dlCSV":
+                    if (URI.length == 4)
+                        response.setContentType("text/csv");
+                        out.println(getCSVString(URI[3]));
                     break;
                 default:
                     request.getRequestDispatcher("/index.html").forward(request, response);
@@ -116,5 +126,34 @@ public class CodonPDX extends HttpServlet {
             obj.put("error", e.getMessage());
             return obj;
         }
+    }
+
+    private String getCSVString(String jobUUID)
+    {
+        try {
+            Configuration config = new PropertiesConfiguration("database.properties");
+            CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
+            List<CodonDB.CSVResultObject> obj = db.getResultAsResultObjectList("refseq", jobUUID);
+            return toCSV(obj);
+        } catch (org.apache.commons.configuration.ConfigurationException e) {
+            e.printStackTrace(out);
+            return null;
+        }
+    }
+
+    public static String toCSV(List<CodonDB.CSVResultObject> obj) {
+
+        StringBuilder sb = new StringBuilder();
+
+        // Header Information
+        sb.append("Accession, Description, Taxonomy, Score, Shuffle Score\n");
+
+        for (CodonDB.CSVResultObject r : obj)
+        {
+            String s = r.id + "," + r.desc + "," + r.taxonomy + "," + r.score + "," + r.shuffle_score + "\n";
+            sb.append(s);
+        }
+
+        return sb.toString();
     }
 }

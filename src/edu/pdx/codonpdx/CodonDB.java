@@ -1,13 +1,9 @@
 package edu.pdx.codonpdx;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.*;
 
 import java.sql.*;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Robert on 7/12/2014.
@@ -78,9 +74,9 @@ public class CodonDB {
 
         while(rs.next()) {
             JSONArray array = new JSONArray();
-            array.add(rs.getString(2));
-            array.add(rs.getDouble(3));
-            array.add(rs.getDouble(4));
+            array.put(rs.getString(2));
+            array.put(rs.getDouble(3));
+            array.put(rs.getDouble(4));
             result.put(rs.getString(1), array);
         }
         rs.close();
@@ -241,8 +237,54 @@ public class CodonDB {
         return ratios;
     }
 
+    public List<CSVResultObject> getResultAsResultObjectList(String seqDatabase, String jobUUID)
+    {
+        List<CSVResultObject> obj = new ArrayList<CSVResultObject>();
+
+        try {
+            st = con.createStatement();
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getInformationForCSVLine, seqDatabase, jobUUID));
+
+            while (rs.next())
+            {
+                String id = rs.getString(1);
+                String taxonomy = rs.getString(2);
+                String description = rs.getString(3);
+                double score = rs.getDouble(4);
+                double shuffle_score = rs.getDouble(5);
+
+                obj.add(new CSVResultObject(id, taxonomy, description, score, shuffle_score));
+            }
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+
+        return obj;
+    }
+
+    public class CSVResultObject {
+        public String id;
+        public String desc;
+        public String taxonomy;
+        public double score;
+        public double shuffle_score;
+
+        public CSVResultObject(String id, String desc, String taxonomy, double score, double shuffle_score)
+        {
+            this.id = id;
+            this.desc = desc;
+            this.taxonomy = taxonomy;
+            this.score = score;
+            this.shuffle_score = shuffle_score;
+        }
+    }
+
     // class encompassing query strings
     private static class CodonDBQueryStrings {
+        public static String getInformationForCSVLine = "select id, taxonomy, description, score, shuffle_score from %1$s as rs inner join results as r on r.organism2 = rs.id where job_uuid='%2$s'";
         public static String getOrgsMatchingUUID = "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score asc limit %2$d)"
                                                  + " UNION "
                                                  + "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score desc limit %2$d)"

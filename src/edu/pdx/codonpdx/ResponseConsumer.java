@@ -23,6 +23,18 @@ public class ResponseConsumer extends QueueObject {
         QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(QUEUE_NAME, true, consumer);
         QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-        return new String(delivery.getBody());
+        String message = new String(delivery.getBody());
+        System.out.println(" [x] Received '" + message + "'");
+        return message;
+    }
+
+    public static void main(String[] argv)
+            throws java.io.IOException,
+            java.lang.InterruptedException {
+
+        ResponseConsumer rc = new ResponseConsumer(argv[0], "localhost");
+        String message = rc.getResponseFromQueue();
+        rc.closeConnect();
+        System.exit(1);
     }
  }
