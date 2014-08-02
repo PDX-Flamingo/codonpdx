@@ -3,6 +3,22 @@
  */
 $(document).ready(function() {
     URI = window.location.href.split("/");
+    var tempChart;
+    $("#scroll").click(function() {
+        $('html, body').animate({
+            scrollTop: $("#titleToScrollTo").offset().top
+        }, 500);
+    });
+    $("#scrollUp").click(function() {
+        $('html, body').animate({
+            scrollTop: $("#scroll").offset().top
+        }, 500);
+    });
+    $("#printerFriendly").click(function() {
+       $("#chartdiv").width("511pt")
+       tempChart.validateNow();
+    });
+
 
     $.ajax({
         url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/' + URI[5] + "/" + URI[6],
@@ -26,7 +42,7 @@ $(document).ready(function() {
                     idArray.push(id);
                 }
                 var id = idArray[0]
-                $("#first").append(idArray[0])
+                $("#first").append("Input Sequence")
                 $("#second").append(idArray[1])
                 var table = $("#table").find("tbody")
 
@@ -57,14 +73,14 @@ $(document).ready(function() {
                     },
                     "valueAxes": [{
                         "position": "top",
-                        "title": "Ratio",
+                        "title": "Ratio"
                     }],
                     "startDuration": 1,
                     "graphs": [{
                         "balloonText": "[[category]] : <b> [[value]]</b>",
                         "fillAlphas": 0.9,
                         "lineAlpha": 0.2,
-                        "title": idArray[0],
+                        "title": "Input sequence",
                         "type": "column",
                         "valueField": "target"
                     }, {
@@ -83,6 +99,7 @@ $(document).ready(function() {
                         "gridPosition": "start"
                     }
                 });
+                tempChart = chart;
             }
             else {
                 alert("Something went wrong")

@@ -18,7 +18,7 @@
 
     <style>
         #chartdiv {
-            width		: 100%;
+            width		: 85%;
             height		: 2000px;
             font-size	: 11px;
         }
@@ -34,12 +34,18 @@
     </style>
 </head>
 <body>
+    <button id="scroll">Scroll to table</button><button id="printerFriendly">Make printer friendly</button>
     <div id="chartdiv"></div>
 
+
+    <h3 id="titleToScrollTo">
+        Codon count ratios
+    </h3>
+    <button id="scrollUp">Scroll to chart</button>
     <table id="table" class="sortable" border="1">
         <thead>
         <tr>
-            <th id="triplet"></th>
+            <th id="triplet">Acid / Codon</th>
             <th class ="sorttable_numeric" id="first"></th>
             <th class="sorttable_numeric" id="second"></th>
         </tr>
