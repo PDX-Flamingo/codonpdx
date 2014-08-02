@@ -83,7 +83,7 @@ public class CodonPDX extends HttpServlet {
                     Configuration config = new PropertiesConfiguration("tomcat.properties");
                     ParseResponse prbody = new ParseResponse(request.getReader());
                     prbody.parseInput();
-                    File f = new File("/opt/share/", uuid);
+                    File f = new File(config.getString(""), uuid);
                     Writer fileWriter = new FileWriter(f);
                     BufferedWriter bw = new BufferedWriter(fileWriter);
                     bw.write(prbody.fileContents);
