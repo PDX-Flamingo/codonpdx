@@ -72,6 +72,15 @@ public class ParseResponse {
             }
             if(postElements[i].contains("name=\"sequenceName\"")) {
                 customSequenceName = postElements[i=i+2].replaceAll("\\r", "");
+                fileContents += "> ";
+                fileContents += customSequenceName;
+                fileContents += "\n";
+                fileType = "FASTA";
+            }
+            if(postElements[i].contains("name=\"sequenceText\""))
+            {
+                fileContents += postElements[i=i+2].replaceAll("\\r", "");
+
             }
 
             if(postElements[i].contains("name=\"file\"")) {
