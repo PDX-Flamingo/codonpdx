@@ -80,6 +80,7 @@ public class CodonPDX extends HttpServlet {
             String uuid = UUID.randomUUID().toString().replace("-", "");
             switch (request.getRequestURI()) {
                 case "/codonpdx/submitRequest":
+                    Configuration config = new PropertiesConfiguration("tomcat.properties");
                     ParseResponse prbody = new ParseResponse(request.getReader());
                     prbody.parseInput();
                     File f = new File("/opt/share/", uuid);
@@ -96,9 +97,7 @@ public class CodonPDX extends HttpServlet {
 
                     break;
             }
-        } catch (IOException e) {
-            e.printStackTrace(out);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace(out);
         }
     }
@@ -106,7 +105,7 @@ public class CodonPDX extends HttpServlet {
     private void scheduleRatioCompare(String uuid, String database, String format) throws InterruptedException, IOException {
         try {
             Configuration config = new PropertiesConfiguration("mq.properties");
-            TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"));
+            TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"), config.getString("queue.user"), config.getString("queue.password"), config.getString("queue.vhost"));
             ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format);
             ts.closeConnect();
         } catch (org.apache.commons.configuration.ConfigurationException e) {
@@ -133,6 +132,13 @@ public class CodonPDX extends HttpServlet {
         try {
             Configuration config = new PropertiesConfiguration("database.properties");
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"));
+            if(!db.connection) {
+                JSONObject obj = new JSONObject();
+                obj.put("connection error", "could not connect");
+                db.sql.printStackTrace(out);
+                return obj;
+            }
+
             JSONObject result = db.getOrganismListAsJSON(organism);
             return result;
         } catch (org.apache.commons.configuration.ConfigurationException e) {

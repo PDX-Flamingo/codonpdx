@@ -15,25 +15,34 @@ public class CodonDB {
     String url = null;
     String user = null;
     String password = null;
+    Boolean connection = false;
+    SQLException sql = null;
 
 
     public CodonDB(String url, String user, String password) {
         this.url = url;
         this.user = user;
         this.password = password;
-        openConnection();
+        connection = openConnection();
     }
 
     private boolean openConnection() {
         try {
             Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection(url, user, password);
+            Properties properties = new Properties();
+            properties.setProperty("user", user);
+            properties.setProperty("password", password);
+            properties.setProperty("ssl", "true");
+            properties.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+            con = DriverManager.getConnection(url, properties);
         }
         catch(SQLException sqle) {
             System.out.println(sqle.getMessage());
+            sql = sqle;
             return false;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            return false;
         }
         return true;
     }
@@ -203,10 +212,10 @@ public class CodonDB {
             st = con.createStatement();
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismIdListQuery, organism));
             while(rs.next()) {
-                JSONArray innerArray = new JSONArray();
-                innerArray.put(rs.getString(1));
-                innerArray.put(rs.getString(2));
-                array.put(innerArray);
+                if(rs.getString(1).startsWith(organism))
+                    array.put(rs.getString(1));
+                if(rs.getString(2).startsWith(organism))
+                    array.put(rs.getString(2));
             }
             list.put("list", array);
             rs.close();

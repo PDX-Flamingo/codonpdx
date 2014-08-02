@@ -18,29 +18,19 @@ public class TaskScheduler extends QueueObject {
     private String startJob = "{\"utc\": true, \"args\": [%1$s, %2$s, \"%3$s\", \"%4$s\"], \"taskset\": \"%5$s\", \"id\": \"%6$s\", \"task\": \"%7$s\", \"kwargs\": {}}";
 
     // Constrctor
-    public TaskScheduler (String queue, String host) throws IOException{
+    public TaskScheduler (String queue, String host, String user, String password, String vhost) throws IOException{
         QUEUE_NAME = queue;
         HOST = host;
-        properties = new AMQP.BasicProperties("application/json",null,null,null,null,null,null,null,null,null,null,"guest",null,null);
+        USER = user;
+        PASSWORD = password;
+        VHOST = vhost;
+        properties = new AMQP.BasicProperties("application/json",null,null,null,null,null,null,null,null,null,null,user,null,null);
         openConnect();
     }
 
     // Schedule a task with a random UUID for the id.  id is returned
     // so that the results of the message can be retrieved if needed
-    public String scheduleTask(String task) throws IOException {
-        if(!this.connectToQueue()) {
-            System.out.println("Could not connect to queue to write");
-            return null;
-        }
-        StringBuilder sb = new StringBuilder();
-        Formatter formatter = new Formatter(sb, Locale.US);  // Some of this should be moved to separate methods
-        String taskList = UUID.randomUUID().toString();  // find out if taskList is even needed
-        String id = UUID.randomUUID().toString();  // Need to
-        String message = formatter.format(testString, 5, taskList, id, task).toString();
-        channel.basicPublish(QUEUE_NAME, QUEUE_NAME, properties, message.getBytes("ASCII"));
-        System.out.println(" Sent : " + message);
-        return id;
-    }
+
 
     public String scheduleTask(String id, String task, String file, String database, String format) throws IOException {
         if(!this.connectToQueue()) {
