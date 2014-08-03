@@ -15,6 +15,9 @@ public abstract class QueueObject {
     // Basic connection information
     protected String QUEUE_NAME;
     protected String HOST;
+    protected String VHOST;
+    protected String USER;
+    protected String PASSWORD;
     protected Connection connection;
     protected ConnectionFactory factory;
     protected Channel channel;
@@ -24,6 +27,9 @@ public abstract class QueueObject {
     public void openConnect() throws IOException {
         factory = new ConnectionFactory();
         factory.setHost(HOST);
+        factory.setVirtualHost(VHOST);
+        factory.setUsername(USER);
+        factory.setPassword(PASSWORD);
         connection = factory.newConnection();
         channel = connection.createChannel();
     }
