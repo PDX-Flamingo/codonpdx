@@ -320,7 +320,7 @@ public class CodonDB {
 
     // class encompassing query strings
     private static class CodonDBQueryStrings {
-        public static String getInformationForCSVLine = "select id, taxonomy, description, score, shuffle_score from %1$s as rs inner join results as r on r.organism2 = rs.id where job_uuid='%2$s'";
+        public static String getInformationForCSVLine = "select id, description, taxonomy, score, shuffle_score from %1$s as rs inner join results as r on r.organism2 = rs.id where job_uuid='%2$s'";
         public static String getOrgsMatchingUUID = "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score asc limit %2$d)"
                                                  + " UNION "
                                                  + "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score desc limit %2$d)"
