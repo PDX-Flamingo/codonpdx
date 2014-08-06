@@ -3,6 +3,25 @@
  */
 $(document).ready(function() {
     URI = window.location.href.split("/");
+    $("#compareChecked").click(function() {
+        var rows = $("#resultsTable").find("tr :checked");
+        var toCompare = [];
+        $.each(rows, function(index, value) {
+            toCompare.push($($(value).parent().parent().find("td")[0]).text())
+        });
+
+        var attachedString = "/";
+        $.each(toCompare, function(index, value) {
+            if(index > 0) {
+                attachedString += "&&&" + value;
+            }
+            else {
+                attachedString += value;
+            }
+        })
+
+        window.location.replace(window.location.href + attachedString);
+    });
     $.ajax({
         url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/' + URI[5],
         type: 'GET',
@@ -24,7 +43,7 @@ $(document).ready(function() {
 
                 for (var k in data){
                     url = window.location.href + "/" + k
-                    newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][0] + '</td></tr>'
+                    newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][0] + '</td><td><input type="checkbox" id="compare"></td></tr>'
                     if(k != "target") {
                         $("#resultsTable").find("tbody").append(newRow)
                     }
@@ -33,6 +52,7 @@ $(document).ready(function() {
                 $("#csv").append('<a href="' + csvUrl + '">Download the results</a>')
                 $("#csv").show();
                 $("#missingData").hide()
+                $("#compareChecked").removeAttr("disabled")
             }
             else {
                 alert("Something went wrong")
