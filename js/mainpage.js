@@ -14,7 +14,6 @@ $(document).ready(function() {
   $("#customList").find("#add").click(addToCustomList)
   $("#customList").find("#add").click(validateCustomListButtons)
   $("#submitRequest").click(submitRequest)
-  $("#speciesInput").bind('change', autoCompleteText)
   validateFormsNotEmpty()
   bindValidate()
 });
@@ -106,17 +105,18 @@ function addToCustomList() {
 function bindValidate() {
   $("#remove").click(validateFormsNotEmpty)
   $("#add").click(validateFormsNotEmpty)
-  $("#sequenceName").bind('change', validateFormsNotEmpty)
-  $("#sequenceText").bind('change', validateFormsNotEmpty)
-  $("#sequenceFile").bind('change', validateFormsNotEmpty)
-  $("#speciesInput").bind('change', validateFormsNotEmpty)
+  $("#sequenceName").bind("change keyup input paste", validateFormsNotEmpty)
+  $("#sequenceText").bind("change keyup input paste", validateFormsNotEmpty)
+  $("#sequenceFile").bind("change keyup input paste", validateFormsNotEmpty)
+  $("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
   rows = $("#customList").find("tbody").children().children()
   $.each(rows, function(index, value) {
-    $(value).find("#speciesInput").bind('change', validateFormsNotEmpty)
-      $(value).find("#speciesInput").bind('change', autoCompleteText)
+      $(value).find("#speciesInput").unbind("change keyup input paste");
+      $(value).find("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
+      $(value).find("#speciesInput").bind("keyup", autoCompleteText)
   })
-  $("#comparison").bind('change', validateFormsNotEmpty)
-  $(".simpleTabsNavigation").bind('change',validateFormsNotEmpty)
+  $("#comparison").bind("change keyup input paste", validateFormsNotEmpty)
+  $(".simpleTabsNavigation").bind("click change keyup input paste",validateFormsNotEmpty)
 }
 
 //Returns true if custom list is selected
