@@ -190,7 +190,7 @@ public class CodonPDX extends HttpServlet {
         StringBuilder sb = new StringBuilder();
 
         // Header Information
-        sb.append("Accession, Description, Taxonomy, Score, Shuffle Score\n");
+        sb.append("Accession,Description,Taxonomy,Score,Shuffle Score\n");
 
         for (CodonDB.CSVResultObject r : obj)
         {
