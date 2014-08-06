@@ -114,6 +114,9 @@ function bindValidate() {
       $(value).find("#speciesInput").unbind("change keyup input paste");
       $(value).find("#speciesInput").bind("change keyup input paste", validateFormsNotEmpty)
       $(value).find("#speciesInput").bind("keyup", autoCompleteText)
+      $(value).find("#speciesInput").autocomplete({
+          source: []
+      });
   })
   $("#comparison").bind("change keyup input paste", validateFormsNotEmpty)
   $(".simpleTabsNavigation").bind("click change keyup input paste",validateFormsNotEmpty)
