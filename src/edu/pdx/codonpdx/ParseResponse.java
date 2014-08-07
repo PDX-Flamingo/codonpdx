@@ -19,7 +19,11 @@ public class ParseResponse {
     public String customSequenceName = null;
     public String customSequence = null;
 
-
+    /*
+        We had issues getting the payload from ajax post.  The java servlet methods
+        for obtaining the data weren't working.  This parser was created in response
+        to that.
+     */
     public ParseResponse(BufferedReader inputReader) {
         this.inputReader = inputReader;
     }
@@ -80,7 +84,6 @@ public class ParseResponse {
             if(postElements[i].contains("name=\"sequenceText\""))
             {
                 fileContents += postElements[i=i+2].replaceAll("\\r", "");
-
             }
 
             if(postElements[i].contains("name=\"file\"")) {
@@ -90,8 +93,6 @@ public class ParseResponse {
                 }
                 continue;
             }
-
-
         }
     }
 
