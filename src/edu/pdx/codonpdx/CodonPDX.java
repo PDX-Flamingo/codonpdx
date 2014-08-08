@@ -93,7 +93,7 @@ public class CodonPDX extends HttpServlet {
                     JSONObject json = new JSONObject();
                     json.put("UUID", uuid);
                     response.setContentType("application/json");
-                    scheduleRatioCompare(uuid, prbody.comparisonHost, prbody.fileType, config.getString("folder.share"), new String[] {});
+                    scheduleRatioCompare(uuid, "refseq", prbody.fileType, config.getString("folder.share"), new String[] {});
                     out.println(json);
 
                     break;
@@ -107,7 +107,7 @@ public class CodonPDX extends HttpServlet {
         try {
             Configuration config = new PropertiesConfiguration("mq.properties");
             TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"), config.getString("queue.user"), config.getString("queue.password"), config.getString("queue.vhost"));
-            ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format, path, organismList);
+            ts.scheduleTask(uuid, "codonpdx.tasks.create_result_from_input_file", uuid, database, format, path, organismList);
             ts.closeConnect();
         } catch (org.apache.commons.configuration.ConfigurationException e) {
             out.println(e.getMessage());

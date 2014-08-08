@@ -51,13 +51,14 @@ public class TaskScheduler extends QueueObject {
         argumentListArray.put(path+file);
         argumentListArray.put(database.toLowerCase());
         argumentListArray.put(format.toLowerCase());
-        //argumentListArray.put(organismListArray);
+        argumentListArray.put(organismListArray);
         //Make the json object
         json.put("utc", true);
         json.put("args", argumentListArray);
         json.put("taskset", taskList);
         json.put("id", id);
         json.put("task", task);
+        System.out.println("Sending: " + json.toString());
         channel.basicPublish(QUEUE_NAME, QUEUE_NAME, properties, json.toString().getBytes("ASCII"));
         System.out.println(" Sent : " + json.toString());
         return id;
