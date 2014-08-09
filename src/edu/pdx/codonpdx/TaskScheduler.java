@@ -14,9 +14,6 @@ public class TaskScheduler extends QueueObject {
     // Queue related variables
     private AMQP.BasicProperties properties;
 
-    //Message string
-    private final String startJob = "{\"utc\": true, \"args\": [%1$s, %2$s, \"%3$s\", \"%4$s\", \"%5$s\"], \"taskset\": \"%6$s\", \"id\": \"%7$s\", \"task\": \"%8$s\", \"kwargs\": {}}";
-
     // Constrctor
     public TaskScheduler (String queue, String host, String user, String password, String vhost) throws IOException{
         QUEUE_NAME = queue;
