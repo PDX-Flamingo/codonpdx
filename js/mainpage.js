@@ -28,15 +28,13 @@ function submitRequest() {
         var customList = []
         rows = $("#customList").find("tbody").children().children()
         $.each(rows, function(index, value) {
-            var row = []
             val = $(value).find("#speciesInput").val()
             if(customListDictionary[val]) {
-                row.push(customListDictionary[val])
+                customList.push(customListDictionary[val])
             }
             else {
-                row.push(val)
+                customList.push(val)
             }
-            customList.push(row)
         })
         data.append('customList', customList)
     }
