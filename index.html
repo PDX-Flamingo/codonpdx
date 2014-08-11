@@ -45,13 +45,20 @@
 
 <body>
 
-    <div class="container">
+  <div class="container">
 
     <div class="header">
         <ul class="nav nav-pills pull-right" role="tablist">
             <li role="presentation" class="active"><a href="/codonpdx/">Home</a></li>
         </ul>
         <h3 class="text-muted">CodonPDX</h3>
+    </div>
+
+
+    <div class="jumbotron">
+        <h1>CodonPDX</h1>
+        <p>Matching viruses to host organisms by analyzing DNA codon ratios</p>
+        <p><a href="https://github.com/PDX-Flamingo" class="btn btn-primary btn-lg" role="button">Source on Github</a></p>
     </div>
 
   <div class="simpleTabs">
@@ -82,7 +89,7 @@
       <form role="form">
         <div class="form-group">
           <label for="sequenceText">Sequence</label>
-          <textarea class="form-control" id="sequenceText" rows="3" placeholder="Enter viral sequence"></textarea>
+          <textarea class="form-control" id="sequenceText" rows="7" placeholder="Enter viral sequence"></textarea>
         </div>
         <div class="form-group">
           <input type="text" class="form-control" id="sequenceName" placeholder="Give this a name">
@@ -93,17 +100,25 @@
   </div>
 
   <div id="generalInput">
-      <form role="form">
-        <div class="form-horizontal">
-          <div class="form-group">
-            <label class="col-xs-4 control-label" for="comparison">Genomic Database</label>
-            <div class="col-xs-4">
-              <select class="form-control" id="comparison">
-              <option value="Custom List">Custom List</option>
-              <option value="RefSeq" selected="selected">RefSeq</option>
-              </select>
+
+    <form role="form">
+
+      <div class="form-group">
+        <div class="row">
+          <div class="col-xs-1"></div>
+          <label class="control-label" for="comparison">Compare Against</label>
+        </div>
+          <div class="row">
+            <div class="col-xs-2"></div>
+            <div class="col-xs-6">
+            <select multiple class="form-control" id="comparison">
+            <option value="RefSeq" selected="selected">All of RefSeq</option>
+            <option value="Custom List">Subset of RefSeq</option>
+            </select>
             </div>
           </div>
+      </div>
+
 
       <div class="form-horizontal" role="form">
         <div id="customList" style="display:none">
@@ -131,10 +146,14 @@
         </div>
     </div>
 
-  </div>
   </form>
   </div>
 
+    <div class="footer">
+      <p>Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</a>.</p>
     </div>
+
+  </div> <!- CONTAINER -->
+
 </body>
 </html>
