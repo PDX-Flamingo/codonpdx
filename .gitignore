@@ -1,5 +1,7 @@
 # Created by http://www.gitignore.io
 
+bootstrap/
+
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 

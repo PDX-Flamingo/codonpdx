@@ -11,11 +11,13 @@ import org.json.*;
 // This class is used to write messages to a RabbitMQ server, where a Python service is running celery to schedule jobs
 public class TaskScheduler extends QueueObject {
 
+    private static TaskScheduler tsInstance = null;
+
     // Queue related variables
     private AMQP.BasicProperties properties;
 
     // Constrctor
-    public TaskScheduler (String queue, String host, String user, String password, String vhost) throws IOException{
+    private TaskScheduler (String queue, String host, String user, String password, String vhost) throws IOException{
         QUEUE_NAME = queue;
         HOST = host;
         USER = user;
@@ -23,6 +25,12 @@ public class TaskScheduler extends QueueObject {
         VHOST = vhost;
         properties = new AMQP.BasicProperties("application/json",null,null,null,null,null,null,null,null,null,null,user,null,null);
         openConnect();
+    }
+
+    public static TaskScheduler getInstance(String name, String host, String user, String password, String vhost) throws IOException {
+        if (tsInstance == null)
+            tsInstance = new TaskScheduler(name, host, user, password, vhost);
+        return TaskScheduler.tsInstance;
     }
 
     // Schedule a task with a random UUID for the id.  id is returned

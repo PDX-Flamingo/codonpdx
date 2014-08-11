@@ -106,8 +106,8 @@ public class CodonPDX extends HttpServlet {
     private void scheduleRatioCompare(String uuid, String database, String format, String path, String[] organismList) throws InterruptedException, IOException {
         try {
             Configuration config = new PropertiesConfiguration("mq.properties");
-            TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"), config.getString("queue.user"), config.getString("queue.password"), config.getString("queue.vhost"));
-            ts.scheduleTask(uuid, "codonpdx.tasks.create_result_from_input_file", uuid, database, format, path, organismList);
+            TaskScheduler ts = TaskScheduler.getInstance(config.getString("queue.name"), config.getString("queue.host"), config.getString("queue.user"), config.getString("queue.password"), config.getString("queue.vhost"));
+            ts.scheduleTask(uuid, ".create_result_from_input_file", uuid, database, format, path, organismList);
             ts.closeConnect();
         } catch (org.apache.commons.configuration.ConfigurationException e) {
             out.println(e.getMessage());
