@@ -55,6 +55,7 @@ $(document).ready(function() {
                 for(var amino in data[id]) {
                     for(var triplet in data[id][amino]) {
                         if(amino != "description") {
+                            tableString = '<tr><td>' + amino + " " + triplet + '</td><td>' + data[id][amino][triplet] + '</td>'
                             chartValuesObject = {
                                            "triplet": amino + " " + triplet,
                                            "amino": amino,
@@ -62,12 +63,16 @@ $(document).ready(function() {
                                            }
                             for(var index in idArray) {
                                 chartValuesObject["other" + index] = data[idArray[index]][amino][triplet]
+                                tableString += '<td>' + data[idArray[index]][amino][triplet] + '</td>'
                             }
                             chartValues.push(chartValuesObject)
-                            table.append('<tr><td>' + amino + " " + triplet + '</td><td>' + data[id][amino][triplet] + '</td><td>' + data[idArray[0]][amino][triplet] + '</td></tr>')
+                            tableString += '</tr>'
+                            table.append(tableString)
                         }
                     }
                 }
+
+                sorttable.makeSortable(document.getElementById("table"));
 
                 var graphItems = []
                 graphItems.push({
@@ -118,11 +123,11 @@ $(document).ready(function() {
                 tempChart = chart;
             }
             else {
-                alert("Something went wrong")
+                alert("The provided UUID in the url does not have corresponding results on the server.")
             }
         },
         error: function() {
-            alert("Something went wrong")
+            alert("The server returned an error on this request. Make sure your UUID is correct and refresh.")
         }
     })
 })
