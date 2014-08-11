@@ -72,6 +72,8 @@ $(document).ready(function() {
                     }
                 }
 
+                sorttable.makeSortable(document.getElementById("table"));
+
                 var graphItems = []
                 graphItems.push({
                                   "balloonText": "[[category]] : <b> [[value]]</b>",
