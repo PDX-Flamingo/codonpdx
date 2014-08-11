@@ -15,6 +15,7 @@ sourceSets {
         resources {
             srcDir 'css/'
             srcDir 'js/'
+            srcDir 'fonts/'
             srcDir 'config/'
         }
     }
@@ -63,6 +64,10 @@ war {
 
     from('js/') {
         into('js')
+    }
+
+    from('fonts/') {
+        into('fonts')
     }
 
     from'config/'
