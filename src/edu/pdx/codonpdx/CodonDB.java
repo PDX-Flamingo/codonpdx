@@ -57,6 +57,7 @@ public class CodonDB {
         }
         rs.close();
         st.close();
+        con.close();
         return sl;
     }
 
@@ -91,10 +92,11 @@ public class CodonDB {
         }
         rs.close();
         st.close();
+        con.close();
         return result;
     }
 
-    public JSONObject getResultOneToOnesAsJSON(String UUID, String comparisonOrganism) {
+    public JSONObject getResultOneToOnesAsJSON(String UUID, String[] comparisonOrganisms) {
         if (con == null) {
             JSONObject error = new JSONObject();
             error.put("error", "connection not made");
@@ -119,11 +121,13 @@ public class CodonDB {
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "input", target));
             result.put(target, getCodonRatios("standard", getCodonCounts(rs)));
             rs.close();
-
-            rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "refseq", comparisonOrganism));
-            result.put(comparisonOrganism, getCodonRatios("standard", getCodonCounts(rs)));
-            rs.close();
+            for(String s: comparisonOrganisms) {
+                rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "refseq", s));
+                result.put(s, getCodonRatios("standard", getCodonCounts(rs)));
+                rs.close();
+            }
             st.close();
+            con.close();
         } catch (SQLException e) {
             JSONObject obj = new JSONObject();
             obj.put("error", e.getMessage());
@@ -291,7 +295,9 @@ public class CodonDB {
 
                 obj.add(new CSVResultObject(id, taxonomy, description, score, shuffle_score));
             }
-
+            rs.close();
+            st.close();
+            con.close();
         } catch (SQLException e)
         {
             e.printStackTrace();

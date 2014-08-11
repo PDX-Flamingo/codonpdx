@@ -37,7 +37,7 @@ public class CodonPDX extends HttpServlet {
                         out.print(getResultsOneToMany(URI[3]));
                         response.setContentType("application/json");
                     } else if (URI.length == 5) {
-                        out.print(getResultsOneToOne(URI[3], URI[4]));
+                        out.print(getResultsOneToOne(URI[3], URI[4].split("&&&")));
                         response.setContentType("application/json");
                     } else
                         out.println("Error with request, check the URL again");
@@ -78,6 +78,7 @@ public class CodonPDX extends HttpServlet {
         try {
             out = response.getWriter();
             String uuid = UUID.randomUUID().toString().replace("-", "");
+            String[] URI = request.getRequestURI().split("/");
             switch (request.getRequestURI()) {
                 case "/codonpdx/submitRequest":
                     Configuration config = new PropertiesConfiguration("tomcat.properties");
@@ -92,7 +93,7 @@ public class CodonPDX extends HttpServlet {
                     JSONObject json = new JSONObject();
                     json.put("UUID", uuid);
                     response.setContentType("application/json");
-                    scheduleRatioCompare(uuid, prbody.comparisonHost, prbody.fileType, config.getString("folder.share"));
+                    scheduleRatioCompare(uuid, "refseq", prbody.fileType, config.getString("folder.share"), new String[] {});
                     out.println(json);
 
                     break;
@@ -102,11 +103,11 @@ public class CodonPDX extends HttpServlet {
         }
     }
 
-    private void scheduleRatioCompare(String uuid, String database, String format, String path) throws InterruptedException, IOException {
+    private void scheduleRatioCompare(String uuid, String database, String format, String path, String[] organismList) throws InterruptedException, IOException {
         try {
             Configuration config = new PropertiesConfiguration("mq.properties");
             TaskScheduler ts = new TaskScheduler(config.getString("queue.name"), config.getString("queue.host"), config.getString("queue.user"), config.getString("queue.password"), config.getString("queue.vhost"));
-            ts.scheduleTask(uuid, "codonpdx.tasks.trigger_demo_behavior", uuid, database, format, path);
+            ts.scheduleTask(uuid, "codonpdx.tasks.create_result_from_input_file", uuid, database, format, path, organismList);
             ts.closeConnect();
         } catch (org.apache.commons.configuration.ConfigurationException e) {
             out.println(e.getMessage());
@@ -153,14 +154,14 @@ public class CodonPDX extends HttpServlet {
         }
     }
 
-    private JSONObject getResultsOneToOne(String uuid, String compareOrganism) {
+    private JSONObject getResultsOneToOne(String uuid, String[] compareOrganisms) {
         try {
             Configuration config = new PropertiesConfiguration("database.properties");
             boolean ssl = false;
             if(config.getString("database.ssl").equals("true"))
                 ssl = true;
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"), ssl);
-            JSONObject result = db.getResultOneToOnesAsJSON(uuid, compareOrganism);
+            JSONObject result = db.getResultOneToOnesAsJSON(uuid, compareOrganisms);
             return result;
         } catch (Exception e) {
             JSONObject obj = new JSONObject();

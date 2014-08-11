@@ -34,31 +34,62 @@ $(document).ready(function() {
             if(response.Error) {
                 alert(response.Error)
             }
-            else if(json != null && json[URI[6]]) {
+            else if(json != null) {
                 var chartValues = [];
 
                 var idArray = [];
                 for(var id in data) {
-                    idArray.push(id);
+                    if(id != URI[5]) {
+                        idArray.push(id);
+                    }
                 }
-                var id = idArray[0]
-                $("#first").append("Input Sequence")
-                $("#second").append(idArray[1])
+                var id = URI[5]
+                $('#triplet').parent().append("<th class =\"sorttable_numeric\" id=\"" + id + "\"></th>")
+                $('#' + id).append("Input Sequence")
+                for(var index in idArray) {
+                    $('#triplet').parent().append("<th class =\"sorttable_numeric\" id=\"" + idArray[index].replace(/\./g, '') + "\"></th>")
+                    $('#' + idArray[index].replace(/\./g, '')).append(idArray[index])
+                }
                 var table = $("#table").find("tbody")
 
                 for(var amino in data[id]) {
                     for(var triplet in data[id][amino]) {
                         if(amino != "description") {
-                            chartValues.push(
-                                {"triplet": amino + " " + triplet,
-                                    "amino": amino,
-                                    "target": data[id][amino][triplet],
-                                    "other": data[idArray[1]][amino][triplet]})
-                            table.append('<tr><td>' + amino + " " + triplet + '</td><td>' + data[id][amino][triplet] + '</td><td>' + data[idArray[1]][amino][triplet] + '</td></tr>')
+                            chartValuesObject = {
+                                           "triplet": amino + " " + triplet,
+                                           "amino": amino,
+                                           "target": data[id][amino][triplet],
+                                           }
+                            for(var index in idArray) {
+                                chartValuesObject["other" + index] = data[idArray[index]][amino][triplet]
+                            }
+                            chartValues.push(chartValuesObject)
+                            table.append('<tr><td>' + amino + " " + triplet + '</td><td>' + data[id][amino][triplet] + '</td><td>' + data[idArray[0]][amino][triplet] + '</td></tr>')
                         }
                     }
                 }
 
+                var graphItems = []
+                graphItems.push({
+                                  "balloonText": "[[category]] : <b> [[value]]</b>",
+                                  "fillAlphas": 0.9,
+                                  "lineAlpha": 0.2,
+                                  "title": "Input sequence",
+                                  "type": "column",
+                                  "valueField": "target"
+                                })
+
+                for(var index in idArray) {
+                    graphItems.push({
+                                  "balloonText": "[[category]] : <b> [[value]]</b>",
+                                  "fillAlphas": 0.9,
+                                  "lineAlpha": 0.2,
+                                  "title": idArray[index],
+                                  "type": "column",
+                                  "columnWidth":0.5,
+                                  "valueField": "other" + index
+                    })
+                }
 
                 var chart = AmCharts.makeChart("chartdiv", {
                     "title": "title",
@@ -76,22 +107,7 @@ $(document).ready(function() {
                         "title": "Ratio"
                     }],
                     "startDuration": 1,
-                    "graphs": [{
-                        "balloonText": "[[category]] : <b> [[value]]</b>",
-                        "fillAlphas": 0.9,
-                        "lineAlpha": 0.2,
-                        "title": "Input sequence",
-                        "type": "column",
-                        "valueField": "target"
-                    }, {
-                        "balloonText": "[[category]] : <b>[[value]]</b>",
-                        "fillAlphas": 0.9,
-                        "lineAlpha": 0.2,
-                        "title": idArray[1],
-                        "type": "column",
-                        "columnWidth":0.5,
-                        "valueField": "other"
-                    }],
+                    "graphs": graphItems,
                     "plotAreaFillAlphas": 0.1,
                     "categoryField": "triplet",
                     "rotate": true,
