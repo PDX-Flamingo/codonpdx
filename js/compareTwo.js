@@ -17,6 +17,7 @@ $(document).ready(function() {
     $("#printerFriendly").click(function() {
        $("#chartdiv").width("511pt")
        tempChart.validateNow();
+       $("#table").width("511pt")
     });
 
 

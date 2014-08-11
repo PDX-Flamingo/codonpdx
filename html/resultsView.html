@@ -1,13 +1,35 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CodonPDX</title>
 
+    <!-- Bootstrap Core -->
+    <link href="/codonpdx/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Theme-->
+    <link href="/codonpdx/css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Google Loader -->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
     <script type="text/javascript">
-        google.load("jquery", "1.4.2");
+        google.load("jquery", "1.4.3");
+        google.load("jqueryui", "1.8.0")
     </script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/codonpdx/js/bootstrap.min.js"></script>
+
 
     <script type= "text/javascript" src="/codonpdx/js/sorttable.js"></script>
     <script type="text/javascript" src="/codonpdx/js/results.js"></script>
@@ -22,28 +44,42 @@
     </style>
 </head>
 <body>
-    <h1 id="missingData">Waiting on the response...</h1>
-    <h3 id="organism">Target organism: </h3>
+    <div class="container">
 
-    <h3 id="csv" style="display:none"></h3>
+        <div class="header">
+            <ul class="nav nav-pills pull-right" role="tablist">
+                <li role="presentation" class="active"><a href="/codonpdx/">Home</a></li>
+                <li role="presentation" class="active"><a href="https://github.com/PDX-Flamingo">Source on Github</a></li>
+            </ul>
+            <h3 class="text-muted">CodonPDX</h3>
+        </div>
 
-    <button id="compareChecked" disabled>
-        Compare Checked
-    </button><br>
-    <table class="sortable" id="resultsTable" border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th class="sorttable_numeric">Score</th>
-                <th class="sorttable_numeric">Shuffled Score</th>
-                <th>Description</th>
-                <th>Compare</th>
-            </tr>
-        </thead>
+        <h1 id="missingData">Waiting on the response...</h1>
+        <h3 id="organism">Target organism: </h3>
 
-        <tbody>
-        </tbody>
-    </table>
+        <h3 id="csv" style="display:none"></h3>
 
+        <button id="compareChecked" disabled>
+            Compare Checked
+        </button><br><br>
+        <table class="sortable" id="resultsTable" border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th class="sorttable_numeric">Score</th>
+                    <th class="sorttable_numeric">Shuffled Score</th>
+                    <th>Description</th>
+                    <th>Compare</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</a>.</p>
+        </div>
+    </div>
 </body>
 </html>
