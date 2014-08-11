@@ -158,7 +158,7 @@ function validateFormsNotEmpty() {
 
 function autoCompleteText() {
     $.ajax({
-        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/list/' + $(this).val(),
+        url: '/codonpdx/list/' + $(this).val(),
         context: this,
         type: 'GET',
         success: function(response) {
