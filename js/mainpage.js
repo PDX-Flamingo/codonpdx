@@ -11,6 +11,10 @@ $(document).ready(function() {
     }
   })
 
+  if($("#comparison").val() == "Custom List") {
+      $("#customList").show()
+  }
+
   $("#customList").find("#add").click(addToCustomList)
   $("#customList").find("#add").click(validateCustomListButtons)
   $("#submitRequest").click(submitRequest)
