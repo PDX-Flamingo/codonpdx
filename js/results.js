@@ -55,11 +55,11 @@ $(document).ready(function() {
                 $("#compareChecked").removeAttr("disabled")
             }
             else {
-                alert("Something went wrong")
+                alert("The provided UUID in the url does not have corresponding results on the server.")
             }
         },
         error: function() {
-            alert("Something went wrong")
+            alert("The server returned an error on this request. Make sure your UUID is correct and refresh.")
         }
     })
 

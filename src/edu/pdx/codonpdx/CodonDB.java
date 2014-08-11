@@ -217,10 +217,18 @@ public class CodonDB {
             st = con.createStatement();
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismIdListQuery, organism.toLowerCase()));
             while(rs.next()) {
+                JSONArray organismArray = new JSONArray();
                 if(rs.getString(1).toLowerCase().startsWith(organism.toLowerCase()))
-                    array.put(rs.getString(1));
-                if(rs.getString(2).toLowerCase().startsWith(organism.toLowerCase()))
-                    array.put(rs.getString(2));
+                {
+                    organismArray.put(rs.getString(1));
+                    organismArray.put(rs.getString(2));
+                    array.put(organismArray);                    
+                }
+                else if(rs.getString(2).toLowerCase().startsWith(organism.toLowerCase())) {
+                    organismArray.put(rs.getString(1));
+                    organismArray.put(rs.getString(2));   
+                    array.put(organismArray);                    
+                }
             }
             list.put("list", array);
             rs.close();

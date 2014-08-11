@@ -1,4 +1,6 @@
 //Page setup
+var customListDictionary = {};
+
 $(document).ready(function() {
   $("#comparison").change(function() {
     if($("#comparison").val() == "Custom List") {
@@ -30,9 +32,13 @@ function submitRequest() {
         var customList = []
         rows = $("#customList").find("tbody").children().children()
         $.each(rows, function(index, value) {
-            var row = []
-            row.push($(value).find("#speciesInput").val())
-            customList.push(row)
+            val = $(value).find("#speciesInput").val()
+            if(customListDictionary[val]) {
+                customList.push(customListDictionary[val])
+            }
+            else {
+                customList.push(val)
+            }
         })
         data.append('customList', customList)
     }
@@ -166,17 +172,23 @@ function autoCompleteText() {
         context: this,
         type: 'GET',
         success: function(response) {
-            if(response) {
+            if(response && response.list) {
+                var autoCompleteArray = [];
+                for(var index in response.list) {
+                    assession = response.list[index][0]
+                    description = response.list[index][1]
+                    autoCompleteArray.push(assession)
+                    autoCompleteArray.push(description)
+                    customListDictionary[description] =  assession
+                }
                 $( this ).autocomplete({
-                    source: response.list
+                    source: autoCompleteArray
                 });
             }
             else {
-                alert("Something went wrong") //Need to make this better
             }
         },
         error: function() {
-            alert("Something went wrong") //Need to make this better
         }
     })
 }
