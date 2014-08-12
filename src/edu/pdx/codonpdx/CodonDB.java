@@ -17,6 +17,7 @@ public class CodonDB {
     String password = null;
     Boolean connection = false;
     Boolean useSSL = false;
+    int MAX_TRIES = 20;
 
 
     public CodonDB(String url, String user, String password, Boolean SSL) {
@@ -61,7 +62,7 @@ public class CodonDB {
         return sl;
     }
 
-    public JSONObject getResultOneToManysAsJSON(String UUID) throws SQLException {
+    public JSONObject getResultOneToManysAsJSON(String UUID) throws SQLException, InterruptedException {
         if(con == null)  {
             JSONObject error = new JSONObject();
             error.put("things", url + user + password);
@@ -74,13 +75,21 @@ public class CodonDB {
         st = con.createStatement();
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
-        if(!rs.next()) {
-            result.put("Error", "This result does not exist");
+        int tryCount = 0;
+        while(!rs.next()) {
+            if(tryCount > MAX_TRIES) {
+                result.put("Error", "Result not found.  Please try again, or re-run your query.");
+                rs.close();
+                st.close();
+                con.close();
+                return result;
+            }
+            tryCount++;
+            Thread.currentThread().sleep(3000);
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
         }
-        else {
-            result.put("target", rs.getString(1));
-        }
-
+        result.put("target", rs.getString(1));
+        rs.close();
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrgsMatchingUUID, UUID, 1000));
 
         while(rs.next()) {
@@ -109,11 +118,21 @@ public class CodonDB {
             st = con.createStatement();
 
             // Query the results table to see if this result exists.
+
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
-            if (!rs.next()) {
-                result.put("Error", "This result does not exist");
-                return result;
+            int tryCount = 0;
+            while(!rs.next()) {
+                if(tryCount > MAX_TRIES) {
+                    result.put("Error", "Result not found.  Please try again, or re-run your query.");
+                    rs.close();
+                    st.close();
+                    con.close();
+                    return result;
+                }
+                tryCount++;
+                Thread.currentThread().sleep(3000);
+                rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
             }
             String target = rs.getString(1);
             rs.close();
@@ -132,6 +151,8 @@ public class CodonDB {
             JSONObject obj = new JSONObject();
             obj.put("error", e.getMessage());
             return obj;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return result;
     }

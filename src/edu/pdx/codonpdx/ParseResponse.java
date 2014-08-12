@@ -12,12 +12,12 @@ import java.util.List;
 public class ParseResponse {
 
     private BufferedReader inputReader = null;
-    private List<String> body = new ArrayList<String>();
     public String comparisonHost = null;
     public String fileContents = "";
     public String fileType = null;
     public String customSequenceName = null;
     public String customSequence = null;
+    public String[] comparisonIds = new String[]{};
 
     /*
         We had issues getting the payload from ajax post.  The java servlet methods
@@ -63,6 +63,7 @@ public class ParseResponse {
                 comparisonHost = postElements[i=i+2].replaceAll("\\r", "");
                 continue;
             }
+
             if(postElements[i].contains("name=\"file\"")) {
                 i=i+3;
                 for(;!postElements[i].contains("------");i++) {
@@ -80,12 +81,18 @@ public class ParseResponse {
                 fileContents += customSequenceName;
                 fileContents += "\n";
                 fileType = "FASTA";
+                continue;
             }
             if(postElements[i].contains("name=\"sequenceText\""))
             {
                 fileContents += postElements[i=i+2].replaceAll("\\r", "");
+                continue;
             }
-
+            if(postElements[i].contains("name=\"customList\""))
+            {
+                i=i+2;
+                comparisonIds = postElements[i].replaceAll("\\r", "").split(",");
+            }
             if(postElements[i].contains("name=\"file\"")) {
                 i=i+2;
                 for(;!postElements[i].contains("------");i++) {

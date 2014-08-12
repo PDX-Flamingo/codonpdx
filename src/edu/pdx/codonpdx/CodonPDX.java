@@ -93,7 +93,7 @@ public class CodonPDX extends HttpServlet {
                     JSONObject json = new JSONObject();
                     json.put("UUID", uuid);
                     response.setContentType("application/json");
-                    scheduleRatioCompare(uuid, "refseq", prbody.fileType, config.getString("folder.share"), new String[] {});
+                    scheduleRatioCompare(uuid, "refseq", prbody.fileType, config.getString("folder.share"), prbody.comparisonIds);
                     out.println(json);
 
                     break;
