@@ -22,7 +22,7 @@ $(document).ready(function() {
 
 
     $.ajax({
-        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/' + URI[5] + "/" + URI[6],
+        url: '/codonpdx/results/' + URI[5] + "/" + URI[6],
         type: 'GET',
         success: function(response) {
             var json = jQuery.parseJSON(response)

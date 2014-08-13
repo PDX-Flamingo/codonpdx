@@ -23,7 +23,7 @@ $(document).ready(function() {
         window.location.replace(window.location.href + attachedString);
     });
     $.ajax({
-        url: 'http://capstonebb.cs.pdx.edu:8080/codonpdx/results/' + URI[5],
+        url: '/codonpdx/results/' + URI[5],
         type: 'GET',
         success: function(response) {
             var json = jQuery.parseJSON(response)

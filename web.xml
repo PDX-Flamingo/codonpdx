@@ -11,7 +11,7 @@
     </description>
 
     <!-- New stuff -->
-
+<!--
     <filter>
         <filter-name>CAS Authentication Filter</filter-name>
         <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
@@ -21,7 +21,7 @@
         </init-param>
         <init-param>
             <param-name>serverName</param-name>
-            <param-value>http://capstonebb.cs.pdx.edu:8080</param-value>
+            <param-value>pdxcodon.research.pdx.edu</param-value>
         </init-param>
         <init-param>
             <param-name>renew</param-name>
@@ -42,7 +42,7 @@
         </init-param>
         <init-param>
             <param-name>serverName</param-name>
-            <param-value>http://capstonebb.cs.pdx.edu:8080</param-value>
+            <param-value>pdxcodon.research.pdx.edu</param-value>
         </init-param>
         <init-param>
             <param-name>proxyCallbackUrl</param-name>
@@ -63,7 +63,7 @@
         <filter-name>CAS Assertion Thread Local Filter</filter-name>
         <filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
     </filter>
-
+-->
     <!-- ************************* -->
 
     <!-- Sign out not yet implemented -->
@@ -73,7 +73,7 @@
       <url-pattern>/*</url-pattern>
      </filter-mapping>
     -->
-
+<!--
     <filter-mapping>
         <filter-name>CAS Authentication Filter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -98,7 +98,7 @@
         <filter-name>CAS Validation Filter</filter-name>
         <url-pattern>/proxyCallback</url-pattern>
     </filter-mapping>
-
+    -->
     <!-- New stuff -->
 
     <servlet>
