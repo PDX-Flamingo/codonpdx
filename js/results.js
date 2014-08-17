@@ -3,6 +3,7 @@
  */
 $(document).ready(function() {
     URI = window.location.href.split("/");
+
     $("#compareChecked").click(function() {
         var rows = $("#resultsTable").find("tr :checked");
         var toCompare = [];
@@ -20,7 +21,7 @@ $(document).ready(function() {
             }
         })
 
-        window.location.replace(window.location.href + attachedString);
+        window.location.href = window.location.href + attachedString;
     });
     $.ajax({
         url: '/codonpdx/results/' + URI[5],
@@ -38,8 +39,6 @@ $(document).ready(function() {
             else if(json != null && json["target"]) {
                 var data = json;
                 var UUID = URI[5];
-
-                $("#organism").append(data["target"])
 
                 for (var k in data){
                     url = window.location.href + "/" + k
@@ -62,8 +61,6 @@ $(document).ready(function() {
             alert("The server returned an error on this request. Make sure your UUID is correct and refresh.")
         }
     })
-
-
 });
 
 
