@@ -97,6 +97,7 @@ public class CodonDB {
             array.put(rs.getString(2));
             array.put(rs.getDouble(3));
             array.put(rs.getDouble(4));
+            array.put(rs.getString(5));
             result.put(rs.getString(1), array);
         }
         rs.close();
@@ -356,9 +357,9 @@ public class CodonDB {
     // class encompassing query strings
     private static class CodonDBQueryStrings {
         public static String getInformationForCSVLine = "select id, description, taxonomy, score, shuffle_score from %1$s as rs inner join results as r on r.organism2 = rs.id where job_uuid='%2$s'";
-        public static String getOrgsMatchingUUID = "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score asc limit %2$d)"
+        public static String getOrgsMatchingUUID = "(select organism2, description, score, shuffle_score, taxonomy from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score asc limit %2$d)"
                                                  + " UNION "
-                                                 + "(select organism2, description, score, shuffle_score from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score desc limit %2$d)"
+                                                 + "(select organism2, description, score, shuffle_score, taxonomy from results as r inner join refseq as rs on r.organism2=rs.id where job_uuid='%1$s' order by score desc limit %2$d)"
                                                  + "order by score asc";
         public static String getTargetArgforUUID = "select job_uuid from results where job_uuid='%1$s' limit 1";
         public static String getOrganismForOneToOne = "select * from %1$s where id='%2$s'";
