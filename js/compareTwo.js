@@ -4,6 +4,8 @@
 $(document).ready(function() {
     URI = window.location.href.split("/");
     var tempChart;
+    var numToCompare = URI[6].split("&&&").length
+    $("#chartdiv").height(numToCompare*400 + "px")
     $("#scroll").click(function() {
         $('html, body').animate({
             scrollTop: $("#titleToScrollTo").offset().top
@@ -17,7 +19,7 @@ $(document).ready(function() {
     $("#printerFriendly").click(function() {
        $("#chartdiv").width("511pt")
        tempChart.validateNow();
-       $("#table").width("511pt")
+       $("#tableDiv").width("511pt")
     });
 
 
