@@ -55,6 +55,7 @@ dependencies {
 
 war {
     from 'index.html'
+    from 'html/about.html'
     from 'html/compareTwo.html'
     from 'html/resultsView.html'
 
