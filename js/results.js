@@ -11,7 +11,7 @@ $(document).ready(function() {
             toCompare.push($($(value).parent().parent().find("td")[0]).text())
         });
 
-        var attachedString = "/";
+        var attachedString = "";
         $.each(toCompare, function(index, value) {
             if(index > 0) {
                 attachedString += "&&&" + value;
