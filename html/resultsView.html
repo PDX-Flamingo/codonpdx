@@ -54,8 +54,13 @@
             <h3 class="text-muted">CodonPDX</h3>
         </div>
 
-        <h1 id="missingData">Waiting on the response...</h1>
-        <h3 id="organism">Target organism: </h3>
+        <div id="missingData">
+            <h1>Waiting on the response...</h1>
+            <div class="progress progress-striped active">
+                <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                </div>
+            </div>
+        </div>
 
         <h3 id="csv" style="display:none"></h3>
 
@@ -68,6 +73,7 @@
                     <th>ID</th>
                     <th class="sorttable_numeric">Score</th>
                     <th class="sorttable_numeric">Shuffled Score</th>
+                    <th>Taxonomy ID</th>
                     <th>Description</th>
                     <th>Compare</th>
                 </tr>

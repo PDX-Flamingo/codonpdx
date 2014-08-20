@@ -3,6 +3,7 @@
  */
 $(document).ready(function() {
     URI = window.location.href.split("/");
+
     $("#compareChecked").click(function() {
         var rows = $("#resultsTable").find("tr :checked");
         var toCompare = [];
@@ -20,7 +21,7 @@ $(document).ready(function() {
             }
         })
 
-        window.location.replace(window.location.href + attachedString);
+        window.location.href = window.location.href + attachedString;
     });
     $.ajax({
         url: '/codonpdx/results/' + URI[5],
@@ -39,11 +40,9 @@ $(document).ready(function() {
                 var data = json;
                 var UUID = URI[5];
 
-                $("#organism").append(data["target"])
-
                 for (var k in data){
                     url = window.location.href + "/" + k
-                    newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][0] + '</td><td><input type="checkbox" id="compare"></td></tr>'
+                    newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][3] + '</td><td>' + data[k][0] + '</td><td><input type="checkbox" id="compare"></td></tr>'
                     if(k != "target") {
                         $("#resultsTable").find("tbody").append(newRow)
                     }
@@ -62,8 +61,6 @@ $(document).ready(function() {
             alert("The server returned an error on this request. Make sure your UUID is correct and refresh.")
         }
     })
-
-
 });
 
 
