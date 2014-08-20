@@ -5,7 +5,9 @@ $(document).ready(function() {
     URI = window.location.href.split("/");
     var tempChart;
     var numToCompare = URI[6].split("&&&").length
-    $("#chartdiv").height(numToCompare*400 + "px")
+    if(numToCompare*400 > 2000) {
+        $("#chartdiv").height(numToCompare * 400 + "px")
+    }
     $("#scroll").click(function() {
         $('html, body').animate({
             scrollTop: $("#titleToScrollTo").offset().top
