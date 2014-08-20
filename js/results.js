@@ -10,7 +10,7 @@ $(document).ready(function() {
             toCompare.push($($(value).parent().parent().find("td")[0]).text())
         });
 
-        var attachedString = "";
+        var attachedString = "/";
         $.each(toCompare, function(index, value) {
             if(index > 0) {
                 attachedString += "&&&" + value;
@@ -20,8 +20,14 @@ $(document).ready(function() {
             }
         })
 
-        window.location.replace(window.location.href + attachedString);
+        href = window.location.href;
+        while(href[href.length-1] == "/") {
+            href = href.substring(0,href.length-2)
+        }
+
+        window.location.href = href + attachedString;
     });
+    
     $.ajax({
         url: '/codonpdx/results/' + URI[5],
         type: 'GET',
