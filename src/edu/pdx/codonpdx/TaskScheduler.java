@@ -1,12 +1,11 @@
 package edu.pdx.codonpdx;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.AMQP;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Formatter;
-import java.util.Locale;
 import java.util.UUID;
-import org.json.*;
 
 // This class is used to write messages to a RabbitMQ server, where a Python service is running celery to schedule jobs
 public class TaskScheduler extends QueueObject {
@@ -17,6 +16,7 @@ public class TaskScheduler extends QueueObject {
     private AMQP.BasicProperties properties;
 
     // Constrctor
+    //Sets default values based on input, those input start from the config file (MQ)
     private TaskScheduler (String queue, String host, String user, String password, String vhost) throws IOException{
         QUEUE_NAME = queue;
         HOST = host;
