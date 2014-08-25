@@ -1,6 +1,51 @@
 /**
  * Created by wes.risenmay on 7/21/14.
  */
+
+function aggregateData() {
+    $("#csv").hide();
+    $("#missingData").show()
+    $("#compareChecked").addAttr("disabled")
+    $.ajax({
+            url: '/codonpdx/resultsaggr/' + URI[5],
+            type: 'GET',
+            success: function(response) {
+                var json = jQuery.parseJSON(response)
+
+                if(json == null) {
+                    json = response
+                }
+
+                if(response.Error) {
+                    alert(response.Error)
+                }
+                else if(json != null && json["target"]) {
+                    var data = json;
+                    var UUID = URI[5];
+
+                    for (var k in data){
+                        url = window.location.href + "/" + k
+                        newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][3].split(";")[data[k][3].split(";").length - 2] + ";" + data[k][3].split(";")[data[k][3].split(";").length - 1] + '</td><td>' + data[k][0] + '</td><td><input type="checkbox" id="compare"></td></tr>'
+                        if(k != "target") {
+                            $("#resultsTable").find("tbody").append(newRow)
+                        }
+                    }
+                    var csvUrl = window.location.href.substring(0,window.location.href.indexOf("resultsView")) + "dlCSV/" + URI[5]
+                    $("#csv").append('<a href="' + csvUrl + '">Download the results</a>')
+                    $("#csv").show();
+                    $("#missingData").hide()
+                    $("#compareChecked").removeAttr("disabled")
+                }
+                else {
+                    alert("The provided UUID in the url does not have corresponding results on the server.")
+                }
+            },
+            error: function() {
+                alert("The server returned an error on this request. Make sure your UUID is correct and refresh.")
+            }
+    });
+}
+
 $(document).ready(function() {
     URI = window.location.href.split("/");
 
@@ -42,7 +87,7 @@ $(document).ready(function() {
 
                 for (var k in data){
                     url = window.location.href + "/" + k
-                    newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][3] + '</td><td>' + data[k][0] + '</td><td><input type="checkbox" id="compare"></td></tr>'
+                    newRow = '<tr><td>' + k + '</td><td>' + '<a href="' + url +'"</a>' + data[k][1] + '</td><td>' + data[k][2] + '</td><td>' + data[k][3].split(";")[data[k][3].split(";").length - 2] + ";" + data[k][3].split(";")[data[k][3].split(";").length - 1] + '</td><td>' + data[k][0] + '</td><td><input type="checkbox" id="compare"></td></tr>'
                     if(k != "target") {
                         $("#resultsTable").find("tbody").append(newRow)
                     }
@@ -52,6 +97,7 @@ $(document).ready(function() {
                 $("#csv").show();
                 $("#missingData").hide()
                 $("#compareChecked").removeAttr("disabled")
+                $("#aggregateResults").removeAttr("disabled")
             }
             else {
                 alert("The provided UUID in the url does not have corresponding results on the server.")
@@ -62,6 +108,8 @@ $(document).ready(function() {
         }
     })
 });
+
+
 
 
 

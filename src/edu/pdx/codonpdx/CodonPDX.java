@@ -1,6 +1,5 @@
 package edu.pdx.codonpdx;
 
-import javax.naming.ConfigurationException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -30,6 +28,8 @@ import java.util.*;
 public class CodonPDX extends HttpServlet {
 
     PrintWriter out = null;
+
+    Process p;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             //The "request" is the incoming url, the "response" is the output going back to the user
@@ -66,17 +66,12 @@ public class CodonPDX extends HttpServlet {
                     } else
                         out.println("Error with request, check the URL again");
                     break;
-                case "celery":
-                    //new stuff
-                    String line;
-                    String command = URI[3].replace("%20", " ");
-                    if(command.startsWith("rm") || command.startsWith("sudo")) command = "nopelol";
-                    Process p = Runtime.getRuntime().exec(command);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    while((line = in.readLine()) != null) {
-                        out.println(line);
-                    }
-                    in.close();
+                case "resultsaggr":
+                    if (URI.length == 4) {
+                        out.println(getResultsOneToManyAggregated(URI[3]));
+                        response.setContentType("application/json");
+                    } else
+                        out.println("Error with request, check the URL again");
                     break;
                 case "dlCSV":
                     //This is for downloading a csv of the results
@@ -131,7 +126,7 @@ public class CodonPDX extends HttpServlet {
             //After all this it uses a function that sends a ratio comparison request to celery
             switch (request.getRequestURI()) {
                 case "/codonpdx/submitRequest":
-                    Configuration config = new PropertiesConfiguration("tomcat.properties");
+                    Configuration config = new PropertiesConfiguration("folder.properties");
                     ParseResponse prbody = new ParseResponse(request.getReader());
                     prbody.parseInput();
                     File f = new File(config.getString("folder.share"), uuid);
@@ -155,6 +150,8 @@ public class CodonPDX extends HttpServlet {
 
     private void scheduleRatioCompare(String uuid, String database, String format, String path, String[] organismList) throws InterruptedException, IOException {
         try {
+            Process p = Runtime.getRuntime().exec("/vol/www/pdxcodon/codonpdx-python/celery.sh start");
+            p.waitFor();
             //This grabs the properites for rabbitMQ from the MQ file
             Configuration config = new PropertiesConfiguration("mq.properties");
             //Makes a TaskScheduler object that connects to the queue
@@ -186,11 +183,26 @@ public class CodonPDX extends HttpServlet {
             return result;
         } catch (Exception e) {
             JSONObject obj = new JSONObject();
-            obj.put("path", System.getProperty("user.dir"));
             obj.put("error", e.getMessage());
             return obj;
         }
 
+    }
+
+    private JSONObject getResultsOneToManyAggregated(String uuid) {
+        try {
+            Configuration config = new PropertiesConfiguration("database.properties");
+            boolean ssl = false;
+            if(config.getString("database.ssl").equals("true"))
+                ssl = true;
+            CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"), ssl);
+            JSONObject result = db.getResultOneToManysAsJSONAggregated(uuid);
+            return result;
+        } catch (Exception e) {
+            JSONObject obj = new JSONObject();
+            obj.put("error", e.getMessage());
+            return obj;
+        }
     }
 
     private JSONObject getOrganismList(String organism) {
@@ -261,7 +273,7 @@ public class CodonPDX extends HttpServlet {
             //(In other words, this makes the db object which creates a connection to the db)
             CodonDB db = new CodonDB(config.getString("database.url"), config.getString("database.user"), config.getString("database.password"), ssl);
             //creates a list and uses the db function to get the csv data in object form
-            List<CodonDB.CSVResultObject> obj = db.getResultAsResultObjectList("refseq", jobUUID);
+            List<CodonDB.ResultObject> obj = db.getResultAsResultObjectList("refseq", jobUUID);
             //This passes it into the toCSV function to convert it to a string before returning it
             return toCSV(obj);
         } catch (org.apache.commons.configuration.ConfigurationException e) {
@@ -272,14 +284,14 @@ public class CodonPDX extends HttpServlet {
 
     //This function takes the csv object and turns it into a string
 
-    public static String toCSV(List<CodonDB.CSVResultObject> obj) {
+    public static String toCSV(List<CodonDB.ResultObject> obj) {
 
         StringBuilder sb = new StringBuilder();
 
         // Header Information
         sb.append("Accession,Description,Taxonomy,Score,Shuffle Score\n");
 
-        for (CodonDB.CSVResultObject r : obj)
+        for (CodonDB.ResultObject r : obj)
         {
             r.desc = r.desc.replace("\"", "\'");
             r.taxonomy = r.taxonomy.replace("\"", "\'");

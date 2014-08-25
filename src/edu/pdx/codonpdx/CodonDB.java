@@ -127,6 +127,68 @@ public class CodonDB {
 
     //This is the function that runs the data retrieval for the one on on comparison
     //and returns a JSON object back to the main CodonPDX servlet
+    // This data is aggregated based on the first 2 words of the description
+    public JSONObject getResultOneToManysAsJSONAggregated(String UUID) throws SQLException, InterruptedException {
+        if(con == null)  {
+            JSONObject error = new JSONObject();
+            error.put("things", url + user + password);
+            error.put("error", "connection not made");
+            return error;
+        }
+        JSONObject result = new JSONObject();
+
+        // Check if this result exists
+        st = con.createStatement();
+        rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
+
+        int tryCount = 0;
+        while(!rs.next()) {
+            if(tryCount > MAX_TRIES) {
+                result.put("Error", "Result not found.  Please try again, or re-run your query.");
+                rs.close();
+                st.close();
+                con.close();
+                return result;
+            }
+            tryCount++;
+            Thread.currentThread().sleep(3000);
+            rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
+        }
+        result.put("target", rs.getString(1));
+        rs.close();
+        rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrgsMatchingUUID, UUID, 1000));
+
+        Map<String, ResultObject> avgMap = new HashMap<>();
+
+        while(rs.next()) {
+            String key = rs.getString(2).split(" ").length > 1 ? rs.getString(2).split(" ")[0] + " " + rs.getString(2).split(" ")[1]: rs.getString(2);
+            if(avgMap.containsKey(key)) {
+                avgMap.get(key).count++;
+                avgMap.get(key).score += rs.getDouble(3);
+                avgMap.get(key).shuffle_score += rs.getDouble(4);
+            } else {
+                ResultObject rso = new ResultObject(rs.getString(1), key, rs.getString(5), rs.getDouble(3), rs.getDouble(4));
+                rso.count++;
+                avgMap.put(key, rso);
+            }
+        }
+        for(String id : avgMap.keySet()) {
+            JSONArray array = new JSONArray();
+            array.put(avgMap.get(id).desc);
+            array.put(avgMap.get(id).score/avgMap.get(id).count);
+            array.put(avgMap.get(id).shuffle_score/avgMap.get(id).count);
+            array.put(avgMap.get(id).taxonomy);
+            result.put(avgMap.get(id).desc, array);
+        }
+        rs.close();
+        st.close();
+        con.close();
+        return result;
+    }
+
+
+    //This is the function that runs the data retrieval for the one on on comparison
+    //and returns a JSON object back to the main CodonPDX servlet
     public JSONObject getResultOneToOnesAsJSON(String UUID, String[] comparisonOrganisms) {
         //Checks if the database connection was successful
         if (con == null) {
@@ -345,11 +407,11 @@ public class CodonDB {
         return ratios;
     }
 
+    public List<ResultObject> getResultAsResultObjectList(String seqDatabase, String jobUUID)
     //This is for getting the data for a job out of the database and returning it as the CSV object
     //(This makes the CSVs being downloaded actually have stuff in them)
-    public List<CSVResultObject> getResultAsResultObjectList(String seqDatabase, String jobUUID)
     {
-        List<CSVResultObject> obj = new ArrayList<CSVResultObject>();
+        List<ResultObject> obj = new ArrayList<ResultObject>();
 
         try {
             st = con.createStatement();
@@ -365,7 +427,7 @@ public class CodonDB {
                 double score = rs.getDouble(4);
                 double shuffle_score = rs.getDouble(5);
 
-                obj.add(new CSVResultObject(id, taxonomy, description, score, shuffle_score));
+                obj.add(new ResultObject(id, taxonomy, description, score, shuffle_score));
             }
             rs.close();
             st.close();
@@ -380,20 +442,22 @@ public class CodonDB {
     }
 
     //Just an object for the CSV results, used by that ^
-    public class CSVResultObject {
+    public class ResultObject {
         public String id;
         public String desc;
         public String taxonomy;
         public double score;
         public double shuffle_score;
+        public int count;
 
-        public CSVResultObject(String id, String desc, String taxonomy, double score, double shuffle_score)
+        public ResultObject(String id, String desc, String taxonomy, double score, double shuffle_score)
         {
             this.id = id;
             this.desc = desc;
             this.taxonomy = taxonomy;
             this.score = score;
             this.shuffle_score = shuffle_score;
+            count = 0;
         }
     }
 
