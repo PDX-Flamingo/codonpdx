@@ -13,6 +13,8 @@ import java.io.*;
  * Created by Robert on 7/7/2014.
  */
 
+//This is another servlet which takes in requests for the chart and the result list
+
 public class ResultsViewServlet extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
@@ -20,9 +22,14 @@ public class ResultsViewServlet extends HttpServlet{
         try {
             PrintWriter out = response.getWriter();
             out.println(request.getRequestURI());
+            //splits the URL like in the CodonPDX.java, it makes the parts of the URL
+            //become elements of a string array based on where the / symbols are
+            //(note that the first one is always empty)
             String[] URI = request.getRequestURI().split("/");
             switch (URI.length < 3 ? "none" : URI[2]) {
                 case "resultsView":
+                    //This checks if it has a comparison element, if it doesn't then it goes to the result list
+                    //if it does, it goes to the chart
                     if(URI.length == 4) {
                         request.getRequestDispatcher("/resultsView.html").forward(request, response);
                     }

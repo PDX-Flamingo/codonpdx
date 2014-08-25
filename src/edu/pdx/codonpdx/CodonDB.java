@@ -8,7 +8,15 @@ import java.util.*;
 /**
  * Created by Robert on 7/12/2014.
  */
+
+//This is the database class, it creates a connection between tomcat and the database (then closes it)
+//It holds all the information retrieval functions and SQL queries
+//Please note that in all of these the variables st that are created are for statement variables
+//and rs are the queries that are run against the database
+
+
 public class CodonDB {
+    //variables
     Connection con = null;
     Statement st = null;
     ResultSet rs = null;
@@ -19,7 +27,8 @@ public class CodonDB {
     Boolean useSSL = false;
     int MAX_TRIES = 20;
 
-
+    //Constructor, this takes in the database properties being passed in
+    //These values come from the DB properties file
     public CodonDB(String url, String user, String password, Boolean SSL) {
         this.url = url;
         this.user = user;
@@ -28,6 +37,8 @@ public class CodonDB {
         connection = openConnection();
     }
 
+    //This opens a connection to the database
+    //All the properties come from the DB file
     private boolean openConnection() {
         try {
             Class.forName("org.postgresql.Driver");
@@ -49,6 +60,7 @@ public class CodonDB {
         return true;
     }
 
+    //This just grabs everything from the results table, never used
     public List<String> getResults(String organism) throws SQLException {
         st = con.createStatement();
         rs = st.executeQuery("select * from results");
@@ -62,7 +74,9 @@ public class CodonDB {
         return sl;
     }
 
+    //almost the same thing as below (one to one) except it does it for many instead of two
     public JSONObject getResultOneToManysAsJSON(String UUID) throws SQLException, InterruptedException {
+        //checks if database is open
         if(con == null)  {
             JSONObject error = new JSONObject();
             error.put("things", url + user + password);
@@ -75,6 +89,8 @@ public class CodonDB {
         st = con.createStatement();
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
+        //This makes the code wait for the comparison to finish,
+        // if it times out then it sends and error back
         int tryCount = 0;
         while(!rs.next()) {
             if(tryCount > MAX_TRIES) {
@@ -90,8 +106,11 @@ public class CodonDB {
         }
         result.put("target", rs.getString(1));
         rs.close();
+        //finds all the organisms that match the request
         rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrgsMatchingUUID, UUID, 1000));
 
+        //grabs all the data and puts it into an array, then drops that into results
+        //(This is doing it one at a time because of the transaction with the database)
         while(rs.next()) {
             JSONArray array = new JSONArray();
             array.put(rs.getString(2));
@@ -106,12 +125,16 @@ public class CodonDB {
         return result;
     }
 
+    //This is the function that runs the data retrieval for the one on on comparison
+    //and returns a JSON object back to the main CodonPDX servlet
     public JSONObject getResultOneToOnesAsJSON(String UUID, String[] comparisonOrganisms) {
+        //Checks if the database connection was successful
         if (con == null) {
             JSONObject error = new JSONObject();
             error.put("error", "connection not made");
             return error;
         }
+        //This is what will be returned
         JSONObject result = new JSONObject();
         try {
 
@@ -123,6 +146,8 @@ public class CodonDB {
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
 
             int tryCount = 0;
+            //This makes the code wait for the comparison to finish,
+            // if it times out then it sends and error back
             while(!rs.next()) {
                 if(tryCount > MAX_TRIES) {
                     result.put("Error", "Result not found.  Please try again, or re-run your query.");
@@ -135,12 +160,15 @@ public class CodonDB {
                 Thread.currentThread().sleep(3000);
                 rs = st.executeQuery(String.format(CodonDBQueryStrings.getTargetArgforUUID, UUID));
             }
+            //target holds the target of the queries (But you can see that)
             String target = rs.getString(1);
             rs.close();
 
+            //takes in the input and target values and uses the format function to run the SQL dynamically
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "input", target));
             result.put(target, getCodonRatios("standard", getCodonCounts(rs)));
             rs.close();
+            //This does the same as above, but it does it for any extra organisms
             for(String s: comparisonOrganisms) {
                 rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismForOneToOne, "refseq", s));
                 result.put(s, getCodonRatios("standard", getCodonCounts(rs)));
@@ -158,6 +186,7 @@ public class CodonDB {
         return result;
     }
 
+    //This just finds all the codon values and puts them in the object that was passed to it
     private JSONObject getCodonCounts(ResultSet rs) throws SQLException {
         JSONObject entry = null;
         if (rs.next()) {
@@ -232,11 +261,14 @@ public class CodonDB {
         return entry;
     }
 
+    //This is for the drop down list on the web page for users finding
     public JSONObject getOrganismListAsJSON(String organism) {
         JSONObject list = new JSONObject();
         JSONArray array = new JSONArray();
         try {
             st = con.createStatement();
+            //runs the query with format to run the SQL dynamically
+            //it grabs first few values that match the starting letters inputted
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getOrganismIdListQuery, organism.toLowerCase()));
             while(rs.next()) {
                 JSONArray organismArray = new JSONArray();
@@ -266,16 +298,22 @@ public class CodonDB {
     }
 
 
+    //This gets the codon ratio for the organism being compared
     private JSONObject getCodonRatios(String table, JSONObject counts) {
         JSONObject ratios = new JSONObject();
         try {
             rs = st.executeQuery(CodonDBQueryStrings.getListOfAminoAcids);
+            //puts in the description (name) and takes the table
+            //that was passed in and puts it into the object as well
             ratios.put("description", counts.get("description"));
             Set<String> aminoacidSet = new HashSet<>();
+            //takes the list from the database and drops it into the variable one at a time
             while (rs.next()) {
                 aminoacidSet.add(rs.getString(1));
             }
             rs.close();
+            //for each element of the list that was taken out of the database above ^
+            //grabs the codon (This should only be for the standard table right now)
             for (String s : aminoacidSet) {
                 JSONObject aminoacidJSON = new JSONObject();
                 rs = st.executeQuery(String.format(CodonDBQueryStrings.getCodonsForAcid, s, table));
@@ -307,6 +345,8 @@ public class CodonDB {
         return ratios;
     }
 
+    //This is for getting the data for a job out of the database and returning it as the CSV object
+    //(This makes the CSVs being downloaded actually have stuff in them)
     public List<CSVResultObject> getResultAsResultObjectList(String seqDatabase, String jobUUID)
     {
         List<CSVResultObject> obj = new ArrayList<CSVResultObject>();
@@ -315,6 +355,8 @@ public class CodonDB {
             st = con.createStatement();
             rs = st.executeQuery(String.format(CodonDBQueryStrings.getInformationForCSVLine, seqDatabase, jobUUID));
 
+            //Grabs data out of the database one row at a time, inputs them into variables
+            //and drops them into the object
             while (rs.next())
             {
                 String id = rs.getString(1);
@@ -337,6 +379,7 @@ public class CodonDB {
         return obj;
     }
 
+    //Just an object for the CSV results, used by that ^
     public class CSVResultObject {
         public String id;
         public String desc;
